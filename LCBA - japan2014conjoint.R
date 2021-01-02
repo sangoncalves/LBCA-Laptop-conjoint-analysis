@@ -2,7 +2,7 @@ library(cjoint)
 library(hash) #https://stackoverflow.com/questions/7818970/is-there-a-dictionary-functionality-in-r/44570412
 data("japan2014conjoint")
 data <- japan2014conjoint
-#data information
+
 
 
 keys <- list('respondent','respondentIndex','task','profile','selected','Consumption tax','Consumption tax.rowpos
