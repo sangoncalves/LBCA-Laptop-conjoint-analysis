@@ -44,7 +44,7 @@ laptops$Memory      <- factor(laptops$Memory, levels=c( "126GB", "256GB", "512GB
 laptops$Processor   <- factor(laptops$Processor, levels=c( "i3", "i5", "i7", "i9" ))
 laptops$Weight      <- factor(laptops$Weight, levels=c( "0.8kg", "1kg", "1.2kg", "1.5kg" ))
 laptops$ScreenSize  <- as.factor(laptops$ScreenSize) 
-laptops$alt         <- as.factor(laptops$alt) # Not sure if we need to convert alt to qualitative
+laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4")) # Not sure if we need to convert alt to qualitative
 
 
 #Fitting model
@@ -52,10 +52,12 @@ laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.i
 
 #Creating alternatives for the models to be chosen
 l1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
-summary(l1)
+#summary(l1)
 
 l2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
-summary(l2)
+#summary(l2)
+
+lrtest(l2, l1) #compare the larger model with intercepts and the nested smaller model without them in order to identify if we can use the model without the intercepts to gain more precision. Slide 20. In our case p-value is 0.5133, if we use level of significance 0.05, then we do not have enough evidence to reject the null hypothesis, therefore the model can be seen as identical.
 
 #Theory about the model
 {
@@ -64,5 +66,12 @@ summary(l2)
 #The order of magnitude of the estimates provides how strong the preferences are. MNL model coefficients are on the logit scale, they tend to range mainly between ???2 and 2
 
 #The Std. Error column gives the level of precision of the estimates and is followed by the z-test statistics and associated p-value indicating the sample evidence against the null hypothesis that the coefficient is equal to zero.
+  
+#The estimated intercepts, that represent the so-called alternative specific   constants (asc), provide the preferences for the positions of the alternatives in each question 
+  
+# estimated alternative specific constants are not significantly different from zero-> consumers not choosing based on the location of the option
+  
+#If we find one of the intercepts to be significant, that may imply that some respondents chose the mid or the right option while disregarding the question.
+  
 }
 
