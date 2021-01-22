@@ -50,14 +50,14 @@ laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4")) # Not s
 #Fitting model
 laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F,levels=c(1,2,3,4))
 
-#Creating alternatives for the models to be chosen
-l1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
+#Creating alternatives for the models to be chosen (lm = laptop_model)
+lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
 #summary(l1)
 
-l2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
+lm2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
 #summary(l2)
 
-lrtest(l2, l1) #compare the larger model with intercepts and the nested smaller model without them in order to identify if we can use the model without the intercepts to gain more precision. Slide 20. In our case p-value is 0.5133, if we use level of significance 0.05, then we do not have enough evidence to reject the null hypothesis, therefore the model can be seen as identical.
+lrtest(lm2, lm1) #compare the larger model with intercepts and the nested smaller model without them in order to identify if we can use the model without the intercepts to gain more precision. Slide 20. In our case p-value is 0.5133, if we use level of significance 0.05, then we do not have enough evidence to reject the null hypothesis, therefore the model can be seen as identical.
 
 #Theory about the model
 {
@@ -74,4 +74,11 @@ lrtest(l2, l1) #compare the larger model with intercepts and the nested smaller 
 #If we find one of the intercepts to be significant, that may imply that some respondents chose the mid or the right option while disregarding the question.
   
 }
+
+#Analyze model with price as qualitative vs quantitative
+lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
+summary(lm3)
+lrtest(lm3, lm2)
+
+#since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative
 
