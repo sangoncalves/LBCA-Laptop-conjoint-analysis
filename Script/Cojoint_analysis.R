@@ -61,7 +61,7 @@ lrtest(lm2, lm1) #compare the larger model with intercepts and the nested smalle
 
 #Theory about the model
 {
-#The Estimate column provides the estimated average part worths for each level; they have to be interpreted with respect to the reference level of each attribute
+#The Estimate column provides the estimated average part worth for each level; they have to be interpreted with respect to the reference level of each attribute
 
 #The order of magnitude of the estimates provides how strong the preferences are. MNL model coefficients are on the logit scale, they tend to range mainly between ???2 and 2
 
@@ -80,5 +80,22 @@ lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Process
 summary(lm3)
 lrtest(lm3, lm2)
 
-#since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative
+#since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative variable. This means that we cannot analyze the willingness-to-pay for each level's attribute.
 
+##Can we analyze the willingness-to-pay on each price????
+
+###########We need to have attention regarding to the preference share! There are some restrictions in interpreting the results, need to check the related class video!
+
+#Considering the set of relevant designs vs all possible sets
+attributes <- list(Price=names(table(laptops.mlogit$Price)),
+                   RAM=names(table(laptops.mlogit$RAM)),
+                   Memory=names(table(laptops.mlogit$Memory)),
+                   Processor=names(table(laptops.mlogit$Processor)),
+                   Weight=names(table(laptops.mlogit$Weight)),
+                   ScreenSize=names(table(laptops.mlogit$ScreenSize)))
+allDesign <- expand.grid(attributes) 
+allDesign #all possible design
+
+# In order to choose the designs, it is a good approach to remove the ones that are not feasible. High end features with lowest price for example. 
+
+# we need to choose some designs to analyze, the possible combinations are too great, we need to reduce them in a meaningful way, like some for low, mid and high end market.
