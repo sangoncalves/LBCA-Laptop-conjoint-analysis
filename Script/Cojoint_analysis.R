@@ -141,15 +141,43 @@ predict.mnl <- function(model, data) {
 predict.mnl(lm2, profiles) # using m2 specification
 
 
-getmode <- function(df) {
-  uniq = unique()
-  
-  laptops[which.max(tabulate(match(laptops, allDesign)))] %>%  filter(laptops, laptops$choice=="1") %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
-}
-
 getmode <- function(v) {
   uniqv <- unique(v) %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
 x <- getmode(laptops)
+
+sensitivity.mnl <- function(model, attrib, base.data, competitor.data) {
+  # Function for creating data for a preference share-sensitivity chart
+  # model: mlogit object returned by mlogit() function
+  # attrib: list of vectors with attribute levels to be used in sensitivity
+  # base.data: data frame containing baseline design of target product
+  # competitor.data: data frame contining design of competitive set
+  data <- rbind(base.data, competitor.data)
+  base.share <- predict.mnl(model, data)[1,1]
+  share <- NULL
+  for (a in seq_along(attrib)) {
+    for (i in attrib[[a]]) {
+      data[1,] <- base.data
+      data[1,a] <- i
+      share <- c(share, predict.mnl(model, data)[1,1])
+    }
+  }
+  data.frame(level=unlist(attrib), share=share, increase=share-base.share)
+}
+base.data <- profiles[5,]
+competitor.data <- profiles[-5,]
+tradeoff <- sensitivity.mnl(lm2, attributes, base.data, competitor.data)
+
+barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
+        ylab="Change in Share for the Planned Product Design", 
+        ylim=c(-0.1,0.4))
+grid(nx=NA, ny=NULL)
+
+
+#heterogeneity
+
+lm2.rpar <- rep("n", length=length(lm2$coef))
+names(lm2.rpar) <- names(lm2$coef)
+lm2.rpar
