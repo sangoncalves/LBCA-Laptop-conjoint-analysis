@@ -181,3 +181,46 @@ grid(nx=NA, ny=NULL)
 lm2.rpar <- rep("n", length=length(lm2$coef))
 names(lm2.rpar) <- names(lm2$coef)
 lm2.rpar
+
+
+
+lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
+                   data = laptops.mlogit, 
+                   panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
+summary(lm2.mixed)
+
+# We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
+layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
+#par(mfrow=c(2,2))
+plot(lm2.mixed)
+
+#comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply into heterogeneity
+par(mfrow=c(2,2))
+processor5.distr <- rpar(lm2.mixed, "Processori5")
+summary(processor5.distr)
+mean(processor5.distr)
+med(processor5.distr)
+plot(processor5.distr)
+
+
+Weight1.5kg.distr <- rpar(lm2.mixed, "Weight1.5kg")
+summary(Weight1.5kg.distr)
+mean(Weight1.5kg.distr)
+med(Weight1.5kg.distr)
+plot(Weight1.5kg.distr)
+
+#High significance means 3*
+lm2.mixed2 <- update(lm2.mixed, correlation = TRUE)
+summary(lm2.mixed2)
+
+cov2cor(cov.mlogit(lm2.mixed2))
+
+summary(vcov(lm2.mixed2, what = "rpar", type = "cor"))
+
+lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB", "RAM32GB", "Memory256GB","Memory512GB", "Memory1T", "Processori5", "Processori7","Processori9", "Weight1kg", "Weight1.2kg", "Weight1.5kg", "ScreenSize13", "ScreenSize14", "ScreenSize16"))
+
+# The significant presence of random coefficients and their correlation 
+# can be further investigated using the ML tests, such as the ML ratio test
+lrtest(lm2, lm2.mixed) #Fixed effects vs. uncorrelated random effects
+lrtest(lm2.mixed, lm2.mixed2) #Uncorrelated random effects vs. all correlated random effects
+lrtest(lm2.mixed3, lm2.mixed2) #partially correlated random effects vs. all correlated random effects
