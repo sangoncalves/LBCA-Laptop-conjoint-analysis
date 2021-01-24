@@ -125,3 +125,31 @@ high1 <- ProductSelection(Price = 2, RAM = 16,Memory = 512, Processor = 7, Weigh
 high2 <- ProductSelection(Price = 2, RAM = 32,Memory = 1, Processor = 9, Weight = 1.5,ScreenSize = 14)
 
 profiles <- rbind(entry1, entry2, mid1, mid2, high1, high2)
+
+predict.mnl <- function(model, data) {
+  # Function for predicting preference shares from a MNL model 
+  # model: mlogit object returned by mlogit()
+  # data: a data frame containing the set of designs for which you want to 
+  #       predict shares.  Same format at the data used to estimate model. 
+  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1]
+  logitUtility <- data.model%*%model$coef
+  share <- exp(logitUtility)/sum(exp(logitUtility))
+  cbind(share, data)
+}
+
+
+predict.mnl(lm2, profiles) # using m2 specification
+
+
+getmode <- function(df) {
+  uniq = unique()
+  
+  laptops[which.max(tabulate(match(laptops, allDesign)))] %>%  filter(laptops, laptops$choice=="1") %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
+}
+
+getmode <- function(v) {
+  uniqv <- unique(v) %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+x <- getmode(laptops)
