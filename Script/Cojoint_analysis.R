@@ -103,20 +103,25 @@ allDesign #all possible design
 
 
 ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
-  ram = paste(as.character(RAM), "GB", sep = "")
-  memory = paste(as.character(Memory), "GB", sep = "")
-  processor = paste('i',as.character(Processor), sep = "")
-  weight = paste(as.character(Weight), "kg", sep = "")
+  ram <-  paste(as.character(RAM), "GB", sep = "")
+  if(Memory==1) memory <- paste(as.character(Memory), "T", sep = "") else memory <-  paste(as.character(Memory), "GB", sep = "")
+  processor <-  paste('i',as.character(Processor), sep = "")
+  weight <-  paste(as.character(Weight), "kg", sep = "")
   
   return(filter(allDesign, Price == {{Price}}, RAM == {{ram}}, Memory == {{ memory }}, Processor == {{ processor }}, Weight == {{ weight }}, ScreenSize == {{ ScreenSize }}))
 }
 
+
 #Entry market
-entry1 <- ProductSelection(Price = 0.7,RAM = 4,Memory = 126,Processor = 3, Weight = 1.5,ScreenSize = 12)
-entry1 <- entry1[sample(nrow(entry1), 1), ]
-
-
-entry2 <- ProductSelection(Price = 1,RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 12)
+entry1 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 126,Processor = 3, Weight = 0.8,ScreenSize = 12)
+entry2 <- ProductSelection(Price = 1, RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 13)
 
 #Mid market
+mid1 <- ProductSelection(Price = 1, RAM = 8,Memory = 256,Processor = 5, Weight = 1, ScreenSize = 13)
+mid2 <- ProductSelection(Price = 1.5, RAM = 16,Memory = 512,Processor = 7, Weight = 1.5,ScreenSize = 16)
 
+#High end market
+high1 <- ProductSelection(Price = 2, RAM = 16,Memory = 512, Processor = 7, Weight = 1.2,ScreenSize = 16)
+high2 <- ProductSelection(Price = 2, RAM = 32,Memory = 1, Processor = 9, Weight = 1.5,ScreenSize = 14)
+
+profiles <- rbind(entry1, entry2, mid1, mid2, high1, high2)
