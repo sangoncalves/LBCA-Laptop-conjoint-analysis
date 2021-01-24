@@ -52,10 +52,10 @@ laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.i
 
 #Creating alternatives for the models to be chosen (lm = laptop_model)
 lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
-#summary(l1)
+summary(lm1)
 
 lm2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
-#summary(l2)
+summary(lm2)
 
 lrtest(lm2, lm1) #compare the larger model with intercepts and the nested smaller model without them in order to identify if we can use the model without the intercepts to gain more precision. Slide 20. In our case p-value is 0.5133, if we use level of significance 0.05, then we do not have enough evidence to reject the null hypothesis, therefore the model can be seen as identical.
 
@@ -101,20 +101,22 @@ allDesign #all possible design
 
 # we need to choose some designs to analyze, the possible combinations are too great, we need to reduce them in a meaningful way, like some for entry, mid and high end market.
 
-ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
-  laptops %>% filter(laptops, Price == {{ Price }}, RAM == {{ RAM }}+"GB", Memory == {{ Memory }}, Processor == {{ Processor }}, Weight == {{ Weight }}, ScreenSize == {{ ScreenSize }})
-}
 
-#Entry market
 ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
   ram = paste(as.character(RAM), "GB", sep = "")
   memory = paste(as.character(Memory), "GB", sep = "")
   processor = paste('i',as.character(Processor), sep = "")
   weight = paste(as.character(Weight), "kg", sep = "")
-  return(filter(laptops, Price == {{Price}}, RAM == {{ram}}, Memory == {{ memory }}, Processor == {{ processor }}, Weight == {{ weight }}, ScreenSize == {{ ScreenSize }}))
+  
+  return(filter(allDesign, Price == {{Price}}, RAM == {{ram}}, Memory == {{ memory }}, Processor == {{ processor }}, Weight == {{ weight }}, ScreenSize == {{ ScreenSize }}))
 }
 
+#Entry market
+entry1 <- ProductSelection(Price = 0.7,RAM = 4,Memory = 126,Processor = 3, Weight = 1.5,ScreenSize = 12)
+entry1 <- entry1[sample(nrow(entry1), 1), ]
 
-entry1 <- ProductSelection(Price = 1,RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 12)
 
-entry2 <- ProductSelection(Price = 0.7,RAM = 4,Memory = 126,Processor = 3, Weight = 1.5,ScreenSize = 12)
+entry2 <- ProductSelection(Price = 1,RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 12)
+
+#Mid market
+
