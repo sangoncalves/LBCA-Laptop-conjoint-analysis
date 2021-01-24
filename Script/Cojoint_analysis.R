@@ -85,6 +85,7 @@ lrtest(lm3, lm2)
 ##Can we analyze the willingness-to-pay on each price????
 
 ###########We need to have attention regarding to the preference share! There are some restrictions in interpreting the results, need to check the related class video!
+#it is important to not treat the obtained preference share predictions as actual market share forecasts. Indeed, while these predictions represent well the respondents behaviour in a survey context, they not necessarily translate to actual sales in the real marketplace.
 
 #Considering the set of relevant designs vs all possible sets
 attributes <- list(Price=names(table(laptops.mlogit$Price)),
@@ -98,4 +99,22 @@ allDesign #all possible design
 
 # In order to choose the designs, it is a good approach to remove the ones that are not feasible. High end features with lowest price for example. 
 
-# we need to choose some designs to analyze, the possible combinations are too great, we need to reduce them in a meaningful way, like some for low, mid and high end market.
+# we need to choose some designs to analyze, the possible combinations are too great, we need to reduce them in a meaningful way, like some for entry, mid and high end market.
+
+ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
+  laptops %>% filter(laptops, Price == {{ Price }}, RAM == {{ RAM }}+"GB", Memory == {{ Memory }}, Processor == {{ Processor }}, Weight == {{ Weight }}, ScreenSize == {{ ScreenSize }})
+}
+
+#Entry market
+ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
+  ram = paste(as.character(RAM), "GB", sep = "")
+  memory = paste(as.character(Memory), "GB", sep = "")
+  processor = paste('i',as.character(Processor), sep = "")
+  weight = paste(as.character(Weight), "kg", sep = "")
+  return(filter(laptops, Price == {{Price}}, RAM == {{ram}}, Memory == {{ memory }}, Processor == {{ processor }}, Weight == {{ weight }}, ScreenSize == {{ ScreenSize }}))
+}
+
+
+entry1 <- ProductSelection(Price = 1,RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 12)
+
+entry2 <- ProductSelection(Price = 0.7,RAM = 4,Memory = 126,Processor = 3, Weight = 1.5,ScreenSize = 12)
