@@ -1,0 +1,162 @@
+---
+title: "Laboratory of Consumer and Business Analytics"
+subtitle: "Conjoint analysis - Laptop Dataset"
+author: 
+  - "Nisha Antony"
+  - "Sander Martins"
+date: "27/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r Loading Libraries, include=FALSE}
+library(mlogit)
+library(dplyr)
+library(ggplot2)
+library(MASS)
+library(lattice)
+```
+
+```{r Loading Dataset, include=FALSE}
+laptops = read.csv("Dataset/laptops.csv", sep=";")
+
+
+```
+
+```{r Preparing data, include=FALSE}
+laptops$Price       <- as.factor(laptops$Price)
+laptops$RAM         <- factor(laptops$RAM, levels=c( "4GB", "8GB", "16GB", "32GB" ))
+laptops$Memory      <- factor(laptops$Memory, levels=c( "126GB", "256GB", "512GB", "1T" ))
+laptops$Processor   <- factor(laptops$Processor, levels=c( "i3", "i5", "i7", "i9" ))
+laptops$Weight      <- factor(laptops$Weight, levels=c( "0.8kg", "1kg", "1.2kg", "1.5kg" ))
+laptops$ScreenSize  <- as.factor(laptops$ScreenSize) 
+laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4"))
+```
+# Agenda
+* Project Description <br/>
+* Summary of all the analysis to be presented <br/>
+* Dataset description <br/>
+* Is our dataset balanced?<br/>
+* Models to fit our data<br/>
+* Choosing models part 1<br/>
+* Are our users homogeneous?<br/>
+* Correlated models<br/>
+* Choosing models part 2<br/>
+* Preference share of the users<br/>
+* Product profiles<br/>
+* Conclusion<br/>
+
+
+
+## Project Description
+
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis.
+
+## Dataset description
+Our dataset represents the generated answers to questionnaires regarding the choice of laptops.
+
+add code here about:
+summarizing the data - levels and attributes
+Quantity of each attributes
+```{r Data description, echo=FALSE}
+summary(laptops)
+```
+
+
+## Is our dataset balanced?
+
+```{r echo=FALSE}
+
+xtabs(choice ~ Price, data=laptops)
+xtabs(choice ~ RAM, data=laptops)
+xtabs(choice ~ Memory, data=laptops)
+xtabs(choice ~ Processor, data=laptops)
+xtabs(choice ~ Weight, data=laptops)
+xtabs(choice ~ ScreenSize, data=laptops)
+```
+
+## Models to fit our data
+```{r}
+laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F,levels=c(1,2,3,4))
+```
+
+```{r}
+lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
+summary(lm1)
+
+lm2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
+summary(lm2)
+```
+
+## Choosing models part 1
+```{r echo=FALSE}
+print("Testing if the models are siginificantly equivalent")
+lrtest(lm2, lm1)
+print("Since p-value is higher than our significance level (0.05), than we do not have enough evidence to reject null hypothesys.")
+```
+
+```{r Can price be quantitative?, eval=FALSE, include=FALSE}
+print("Analyze model with price as qualitative vs quantitative")
+lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
+summary(lm3)
+lrtest(lm3, lm2)
+print("since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative variable. This means that we cannot analyze the willingness-to-pay for each level's attribute.")
+```
+
+## Popular profiles (top 15)
+```{r Frequency table, include=FALSE}
+#adding index
+laptops.chosen <- filter(laptops,laptops$choice == "1")
+laptops.indexed <- laptops.chosen
+laptops.indexed$id <- paste(as.character(laptops.indexed$Price),"-",
+                            as.character(laptops.indexed$RAM),"-",
+                            as.character(laptops.indexed$Memory),"-",
+                            as.character(laptops.indexed$Processor),"-",
+                            as.character(laptops.indexed$Weight),"-",
+                            as.character(laptops.indexed$ScreenSize), sep = "")
+
+# Profiles more "popular" (top chosen)
+freqtable <- table(laptops.indexed$id)
+df <- as.data.frame.table(freqtable)
+df <- df %>% as.data.frame() %>% top_n(15, Freq) %>% rename(Profiles = Var1)
+df <- df[1:15,]
+df <- transform(df, Profiles=reorder(Profiles, -Freq)) 
+theme_set(theme_classic())
+```
+
+```{r Profiles Graph, echo=FALSE}
+## Plot
+g <- ggplot(df, aes(Profiles, Freq))
+g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
+  labs(title="Profiles counting", 
+       caption="Frequency of profiles") +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+```
+
+```{r Function selecting profiles, include=FALSE}
+ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
+  ram <-  paste(as.character(RAM), "GB", sep = "")
+  if(Memory==1) memory <- paste(as.character(Memory), "T", sep = "") else memory <-  paste(as.character(Memory), "GB", sep = "")
+  processor <-  paste('i',as.character(Processor), sep = "")
+  weight <-  paste(as.character(Weight), "kg", sep = "")
+  
+  return(filter(allDesign, Price == {{Price}}, RAM == {{ram}}, Memory == {{ memory }}, Processor == {{ processor }}, Weight == {{ weight }}, ScreenSize == {{ ScreenSize }}))
+}
+```
+
+## Are our users homogeneous?
+
+## Correlated models
+
+## Choosing models part 2
+
+## Preference share of the users
+
+## Product profiles
+
+## Conclusion
