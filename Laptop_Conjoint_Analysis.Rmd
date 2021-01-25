@@ -1,0 +1,15 @@
+---
+title: "Laptop_conjoint_analysis"
+author: "Sander_MartinsGoncalves&Nisha_Antony"
+date: "25/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we can reach using this analysis.
+
+#Dataset
+Our dataset represents questionaries regarding the 
