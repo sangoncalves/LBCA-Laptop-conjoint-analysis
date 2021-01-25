@@ -1,3 +1,4 @@
+dev.off()
 library(mlogit)
 setwd('C:/Users/sande/Documents/MyProjects/LBCA-Laptop-conjoint-analysis')
 laptops = read.csv('./dataset/laptops.csv', sep=";")
@@ -224,3 +225,79 @@ lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB",
 lrtest(lm2, lm2.mixed) #Fixed effects vs. uncorrelated random effects
 lrtest(lm2.mixed, lm2.mixed2) #Uncorrelated random effects vs. all correlated random effects
 lrtest(lm2.mixed3, lm2.mixed2) #partially correlated random effects vs. all correlated random effects
+
+# Simulating shares
+library(MASS)
+predict.mixed.mnl <- function(model, data, nresp=1000) {
+  # Function for predicting shares from a mixed MNL model 
+  # model: mlogit object returned by mlogit()
+  # data: a data frame containing the set of designs for which you want to 
+  #       predict shares. Same format at the data used to estimate model. 
+  # Note that this code assumes all model parameters are random
+  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1]
+  coef.Sigma <- cov.mlogit(model)
+  coef.mu <- model$coef[1:dim(coef.Sigma)[1]]
+  draws <- mvrnorm(n=nresp, coef.mu, coef.Sigma)
+  shares <- matrix(NA, nrow=nresp, ncol=nrow(data))
+  for (i in 1:nresp) {
+    utility <- data.model%*%draws[i,]
+    share = exp(utility)/sum(exp(utility))
+    shares[i,] <- share
+  }
+  cbind(colMeans(shares), data)
+}
+
+set.seed(1111)
+predict.mixed.mnl(lm2.mixed2, data=profiles)
+
+library(DescTools)
+
+
+
+# Indexing
+laptops.chosen <- filter(laptops,laptops$choice == "1")
+laptops.indexed <- laptops.chosen
+laptops.indexed$id <- paste(as.character(laptops.indexed$Price),
+                            as.character(laptops.indexed$RAM),
+                            as.character(laptops.indexed$Memory),
+                            as.character(laptops.indexed$Processor),
+                            as.character(laptops.indexed$Weight),
+                            as.character(laptops.indexed$ScreenSize), sep = "")
+
+# Profiles more "popular" (top chosen)
+freqtable <- table(laptops.indexed$id)
+df <- as.data.frame.table(freqtable)
+df <- df %>% as.data.frame() %>%  arrange(desc(Freq)) %>% top_n(15, Freq)
+head(df)
+
+## Plot
+library(ggplot2)
+library(forcats)
+#top15_profiles <- top15_profiles %>% mutate(Var1 = fct_reorder(Var1, Freq))
+
+theme_set(theme_classic())
+g <- ggplot(top15_profiles, aes(Var1, Freq))
+g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
+  labs(title="Profiles counting", 
+       caption="Frequency of profiles") +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+'''
+probably useless stuff, need to check if need something form this part
+
+library("dplyr")
+allDesign <- allDesign %>% mutate(id = row_number())
+output1 %>% group_by(ID) %>% mutate(rn = 1:n())
+
+df <- df %>% group_by(group_var) %>% mutate(id = row_number())
+
+col.names <- colnames(laptops[4:9])
+
+laptops.indexed <- laptops.chosen %>% group_by("Price","RAM","Memory","Processor","Weight", "ScreenSize") %>% mutate(id = row_number())# %>%  ungroup()
+
+laptops.mode <- Mode(laptops.indexed$id) %>% filter(laptops.indexed, laptops.indexed$choice=="1")
+
+#laptops.chosen <- filter(laptops.indexed, laptops.indexed$choice=="1")
+#laptops.chosen.mode <- Mode(laptops.chosen$id)
+
+'''
