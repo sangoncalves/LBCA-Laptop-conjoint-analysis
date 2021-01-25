@@ -1,7 +1,7 @@
 dev.off()
 library(mlogit)
-setwd('C:/Users/sande/Documents/MyProjects/LBCA-Laptop-conjoint-analysis')
-laptops = read.csv('./dataset/laptops.csv', sep=";")
+#setwd('C:/Users/sande/Documents/MyProjects/LBCA-Laptop-conjoint-analysis')
+laptops = read.csv("Dataset/laptops.csv", sep=";")
 
 #information about the theory
 {
@@ -118,6 +118,7 @@ df <- as.data.frame.table(freqtable)
 df <- df %>% as.data.frame() %>% top_n(15, Freq) %>% rename(Profiles = Var1)
 df <- df[1:15,]
 df <- transform(df, Profiles=reorder(Profiles, -Freq)) 
+
 ## Plot
 library(ggplot2)
 theme_set(theme_classic())
@@ -166,12 +167,12 @@ predict.mnl <- function(model, data) {
 predict.mnl(lm2, profiles) # using m2 specification
 
 
-getmode <- function(v) {
-  uniqv <- unique(v) %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
-  uniqv[which.max(tabulate(match(v, uniqv)))]
-}
-
-x <- getmode(laptops)
+# getmode <- function(v) {
+#   uniqv <- unique(v) %>% select(colnames(laptops)-c("resp.id","qes", "alt"))
+#   uniqv[which.max(tabulate(match(v, uniqv)))]
+# }
+# 
+# x <- getmode(laptops)
 
 sensitivity.mnl <- function(model, attrib, base.data, competitor.data) {
   # Function for creating data for a preference share-sensitivity chart

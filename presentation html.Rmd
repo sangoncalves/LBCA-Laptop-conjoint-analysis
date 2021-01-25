@@ -99,7 +99,7 @@ lrtest(lm2, lm1)
 print("Since p-value is higher than our significance level (0.05), than we do not have enough evidence to reject null hypothesys.")
 ```
 
-```{r Can price be quantitative?, eval=FALSE, include=FALSE}
+```{r Willingness to pay (not available for our data), eval=FALSE, include=FALSE}
 print("Analyze model with price as qualitative vs quantitative")
 lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
 summary(lm3)
@@ -139,6 +139,14 @@ g + geom_bar(stat="identity", width = 0.5, fill="tomato2") +
 ```
 
 ```{r Function selecting profiles, include=FALSE}
+attributes <- list(Price=names(table(laptops.mlogit$Price)),
+                   RAM=names(table(laptops.mlogit$RAM)),
+                   Memory=names(table(laptops.mlogit$Memory)),
+                   Processor=names(table(laptops.mlogit$Processor)),
+                   Weight=names(table(laptops.mlogit$Weight)),
+                   ScreenSize=names(table(laptops.mlogit$ScreenSize)))
+allDesign <- expand.grid(attributes) 
+
 ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
   ram <-  paste(as.character(RAM), "GB", sep = "")
   if(Memory==1) memory <- paste(as.character(Memory), "T", sep = "") else memory <-  paste(as.character(Memory), "GB", sep = "")
@@ -149,9 +157,117 @@ ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
 }
 ```
 
+## Profiles chosen 
+```{r include=FALSE}
+#Entry market
+entry1 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 126,Processor = 3, Weight = 0.8,ScreenSize = 12)
+entry2 <- ProductSelection(Price = 1, RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 13)
+
+#Mid market
+mid1 <- ProductSelection(Price = 1, RAM = 8,Memory = 256,Processor = 5, Weight = 1, ScreenSize = 13)
+mid2 <- ProductSelection(Price = 1.5, RAM = 16,Memory = 512,Processor = 7, Weight = 1.5,ScreenSize = 16)
+
+#High end market
+high1 <- ProductSelection(Price = 2, RAM = 16,Memory = 512, Processor = 7, Weight = 1.2,ScreenSize = 16)
+high2 <- ProductSelection(Price = 2, RAM = 32,Memory = 1, Processor = 9, Weight = 1.5,ScreenSize = 14)
+
+profiles <- rbind(entry1, entry2, mid1, mid2, high1, high2)
+```
+
+```{r echo=FALSE}
+print(profiles)
+```
+
+```{r Predict Function, include=FALSE}
+predict.mnl <- function(model, data) {
+  # Function for predicting preference shares from a MNL model 
+  # model: mlogit object returned by mlogit()
+  # data: a data frame containing the set of designs for which you want to 
+  #       predict shares.  Same format at the data used to estimate model. 
+  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1]
+  logitUtility <- data.model%*%model$coef
+  share <- exp(logitUtility)/sum(exp(logitUtility))
+  cbind(share, data)
+}
+```
+
+## Preference share prediction (Not representing sales)
+```{r echo=FALSE}
+predict.mnl(lm2, profiles)
+```
+
+```{r include=FALSE}
+sensitivity.mnl <- function(model, attrib, base.data, competitor.data) {
+  # Function for creating data for a preference share-sensitivity chart
+  # model: mlogit object returned by mlogit() function
+  # attrib: list of vectors with attribute levels to be used in sensitivity
+  # base.data: data frame containing baseline design of target product
+  # competitor.data: data frame contining design of competitive set
+  data <- rbind(base.data, competitor.data)
+  base.share <- predict.mnl(model, data)[1,1]
+  share <- NULL
+  for (a in seq_along(attrib)) {
+    for (i in attrib[[a]]) {
+      data[1,] <- base.data
+      data[1,a] <- i
+      share <- c(share, predict.mnl(model, data)[1,1])
+    }
+  }
+  data.frame(level=unlist(attrib), share=share, increase=share-base.share)
+}
+
+base.data <- profiles[5,]
+competitor.data <- profiles[-5,]
+tradeoff <- sensitivity.mnl(lm2, attributes, base.data, competitor.data)
+```
+
+## Trade-off graph
+```{r echo=FALSE}
+print(tradeoff)
+barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
+        ylab="Change in Share for the Planned Product Design", 
+        ylim=c(-0.1,0.4))
+grid(nx=NA, ny=NULL)
+```
+
 ## Are our users homogeneous?
+```{r include=FALSE}
+lm2.rpar <- rep("n", length=length(lm2$coef))
+names(lm2.rpar) <- names(lm2$coef)
+lm2.rpar
+```
+
+```{r}
+lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
+                   data = laptops.mlogit, 
+                   panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
+summary(lm2.mixed)
+```
 
 ## Correlated models
+```{r}
+# We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
+layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
+#par(mfrow=c(2,2))
+plot(lm2.mixed)
+```
+
+```{r}
+#comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply into heterogeneity
+par(mfrow=c(2,2))
+processor5.distr <- rpar(lm2.mixed, "Processori5")
+summary(processor5.distr)
+mean(processor5.distr)
+med(processor5.distr)
+plot(processor5.distr)
+
+
+Weight1.5kg.distr <- rpar(lm2.mixed, "Weight1.5kg")
+summary(Weight1.5kg.distr)
+mean(Weight1.5kg.distr)
+med(Weight1.5kg.distr)
+plot(Weight1.5kg.distr)
+```
 
 ## Choosing models part 2
 
