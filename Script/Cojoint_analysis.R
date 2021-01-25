@@ -101,7 +101,31 @@ allDesign #all possible design
 # In order to choose the designs, it is a good approach to remove the ones that are not feasible. High end features with lowest price for example. 
 
 # we need to choose some designs to analyze, the possible combinations are too great, we need to reduce them in a meaningful way, like some for entry, mid and high end market.
+# Indexing
+laptops.chosen <- filter(laptops,laptops$choice == "1")
+laptops.indexed <- laptops.chosen
+laptops.indexed$id <- paste(as.character(laptops.indexed$Price),"-",
+                            as.character(laptops.indexed$RAM),"-",
+                            as.character(laptops.indexed$Memory),"-",
+                            as.character(laptops.indexed$Processor),"-",
+                            as.character(laptops.indexed$Weight),"-",
+                            as.character(laptops.indexed$ScreenSize), sep = "")
 
+# Profiles more "popular" (top chosen)
+library(dplyr)
+freqtable <- table(laptops.indexed$id)
+df <- as.data.frame.table(freqtable)
+df <- df %>% as.data.frame() %>% top_n(15, Freq) %>% rename(Profiles = Var1)
+df <- df[1:15,]
+df <- transform(df, Profiles=reorder(Profiles, -Freq)) 
+## Plot
+library(ggplot2)
+theme_set(theme_classic())
+g <- ggplot(df, aes(Profiles, Freq))
+g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
+  labs(title="Profiles counting", 
+       caption="Frequency of profiles") +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6))
 
 ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
   ram <-  paste(as.character(RAM), "GB", sep = "")
@@ -250,35 +274,32 @@ predict.mixed.mnl <- function(model, data, nresp=1000) {
 set.seed(1111)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 
-library(DescTools)
+
+### Assessing the effects of individual-level predictors
+# To assess if consumer heterogeneity can be explained by their individual characteristics
+# we can study the relationship between the individual part worth and the individual-level variables.
+# Individual part worth can be extracted using fitted(), with the "type" argument set to "parameters". 
+PW.ind <- fitted(m2.mixed2, type = "parameters")
+head(PW.ind)
+
+# We can use merge() to include the individual-level variable "carpool" 
+carpool.data <- unique(minivan[,c(1,4)])
+names(PW.ind)[1] <- "resp.id"
+PW.ind <- merge(PW.ind, carpool.data, by="resp.id")
+
+# Let's focus on the seat8 random effect 
+library(lattice)
+histogram(~ seat8 | carpool, data=PW.ind)
+boxplot(seat8 ~ carpool, data=PW.ind)
+by(PW.ind$seat8, PW.ind$carpool, mean)
+t.test(seat8 ~ carpool, data=PW.ind) # heterogeneity about preference for 8-seats is at least partially
+# significantly explained by carpool
 
 
 
-# Indexing
-laptops.chosen <- filter(laptops,laptops$choice == "1")
-laptops.indexed <- laptops.chosen
-laptops.indexed$id <- paste(as.character(laptops.indexed$Price),
-                            as.character(laptops.indexed$RAM),
-                            as.character(laptops.indexed$Memory),
-                            as.character(laptops.indexed$Processor),
-                            as.character(laptops.indexed$Weight),
-                            as.character(laptops.indexed$ScreenSize), sep = "")
 
-# Profiles more "popular" (top chosen)
-library(dplyr)
-freqtable <- table(laptops.indexed$id)
-df <- as.data.frame.table(freqtable)
-df <- df %>% as.data.frame() %>% top_n(15, Freq)
-df <- df[1:15,]
-df <- transform(df, Var1=reorder(Var1, -Freq)) 
-## Plot
-library(ggplot2)
-theme_set(theme_classic())
-g <- ggplot(df2, aes(Var1, Freq))
-g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
-  labs(title="Profiles counting", 
-       caption="Frequency of profiles") +
-  theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+
 
 
 
