@@ -265,22 +265,24 @@ laptops.indexed$id <- paste(as.character(laptops.indexed$Price),
                             as.character(laptops.indexed$ScreenSize), sep = "")
 
 # Profiles more "popular" (top chosen)
+library(dplyr)
 freqtable <- table(laptops.indexed$id)
 df <- as.data.frame.table(freqtable)
-df <- df %>% as.data.frame() %>%  arrange(desc(Freq)) %>% top_n(15, Freq)
-head(df)
-
+df <- df %>% as.data.frame() %>% top_n(15, Freq)
+df <- df[1:15,]
+df <- transform(df, Var1=reorder(Var1, -Freq)) 
 ## Plot
 library(ggplot2)
-library(forcats)
-#top15_profiles <- top15_profiles %>% mutate(Var1 = fct_reorder(Var1, Freq))
-
 theme_set(theme_classic())
-g <- ggplot(top15_profiles, aes(Var1, Freq))
+g <- ggplot(df2, aes(Var1, Freq))
 g + geom_bar(stat="identity", width = 0.5, fill="tomato2") + 
   labs(title="Profiles counting", 
        caption="Frequency of profiles") +
   theme(axis.text.x = element_text(angle=65, vjust=0.6))
+
+
+
+
 
 '''
 probably useless stuff, need to check if need something form this part
