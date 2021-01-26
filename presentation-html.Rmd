@@ -70,7 +70,7 @@ summary(laptops)
 
 In this part, we check whether the attributes are well balanced.
 
-```{r check balance, echo=FALSE}
+```{r echo=FALSE}
 # To check balance, he used this function
 sapply(laptops, table)
 ```
@@ -78,7 +78,7 @@ sapply(laptops, table)
 Here, the attributes are properly balanced, which means that the frequencies across each levels of the attributes are equally distributed. There is no over/under representation in level of attributes.  
 
 Now we can look into the association of attributes with choice made by the respondent. The xtabs() which provides the joint distribution between two variables is used here.
-```{r xtabs - distribution among variables and choice}
+```{r}
 xtabs(choice ~ Price, data=laptops)
 xtabs(choice ~ RAM, data=laptops)
 xtabs(choice ~ Memory, data=laptops)
@@ -98,13 +98,13 @@ From the dataset, we can gather that the respondent had 4 alternatives to make h
 
 We use mlogit() function to fit the MNL model. However, the function requires us to organize the data in a special format by using dfidx(). 
 
-```{r dfidx, include=FALSE}
+```{r}
 laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F, levels=c(1,2,3,4))
 ```
 
 Now, we assess how attributes affects the choice. In the first model, we will consider the intercept parameters so that we can test the restrictions on them by comparing two models.
 
-```{r MNL}
+```{r}
 lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize , data = laptops.mlogit)
 summary(lm1)
 ```
@@ -114,14 +114,14 @@ In the summary of lm1 model, we can see that the model estimate coefficient of R
 ### Multinomial Logit Model(MNL) Without Intercept
 In order to formally test the significance of the intercept, we fit another model without the intercept parameters and perform a likelihood ratio test comparing both models.
 
-```{r MNL Without Intercept}
+```{r}
 lm2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
 summary(lm2)
 ```
 
 ### Choosing models part 1
 
-```{r lrtest(lm1, lm2), echo=FALSE}
+```{r echo=FALSE}
 
 lrtest(lm1, lm2)
 print("")
@@ -189,27 +189,23 @@ ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
 ```
 
 ### Profiles chosen 
-```{r setting profiles, include=FALSE}
+```{r include=FALSE}
 #Entry market
 entry1 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 126,Processor = 3, Weight = 0.8,ScreenSize = 12)
 entry2 <- ProductSelection(Price = 1, RAM = 4,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 13)
-entry3 <- ProductSelection(Price = 0.7, RAM = 8,Memory = 126,Processor = 3, Weight = 1.2,ScreenSize = 14)
-entry4 <- ProductSelection(Price = 0.7, RAM = 8,Memory = 1,Processor = 3, Weight = 1.2,ScreenSize = 16)
 
 #Mid market
 mid1 <- ProductSelection(Price = 1, RAM = 8,Memory = 256,Processor = 5, Weight = 1, ScreenSize = 13)
 mid2 <- ProductSelection(Price = 1.5, RAM = 16,Memory = 512,Processor = 7, Weight = 1.5,ScreenSize = 16)
-mid3 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 126,Processor = 5, Weight = 1.2,ScreenSize = 14)
 
 #High end market
 high1 <- ProductSelection(Price = 2, RAM = 16,Memory = 512, Processor = 7, Weight = 1.2,ScreenSize = 16)
 high2 <- ProductSelection(Price = 2, RAM = 32,Memory = 1, Processor = 9, Weight = 1.5,ScreenSize = 14)
-high3 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 1,Processor = 9, Weight = 1,ScreenSize = 16)
 
-profiles <- rbind(entry1, entry2,entry3, entry4, mid1, mid2, mid3, high1, high2, high3)
+profiles <- rbind(entry1, entry2, mid1, mid2, high1, high2)
 ```
 
-```{r profiles output, echo=FALSE}
+```{r echo=FALSE}
 print(profiles)
 ```
 
@@ -285,7 +281,7 @@ predictedShares
 }
 ```
 ### Preference share with bootstrap - Fixed model
-```{r predict bootstrap - Fixed model, echo=FALSE}
+```{r}
 BootCI.predict.mnl(lm2,profiles)
 ```
 
@@ -326,7 +322,7 @@ grid(nx=NA, ny=NULL)
 ```
 
 ## Are users homogeneous?
-```{r lm2.rpar, include=FALSE}
+```{r include=FALSE}
 lm2.rpar <- rep("n", length=length(lm2$coef))
 names(lm2.rpar) <- names(lm2$coef)
 lm2.rpar
@@ -334,7 +330,7 @@ lm2.rpar
 
 ### Mixed MNL (with Random Effect)
 In order to verify that, we are going to create a model that takes in consideration random effects (variation according to respondents).
-```{r Mixed MNL (with Random Effect)}
+```{r}
 lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
@@ -342,7 +338,7 @@ summary(lm2.mixed)
 ```
 
 ### Distribution of the random effects - Level of heterogeneity
-```{r Distribution of the random effects, echo=FALSE}
+```{r echo=FALSE}
 # We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
 #layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
 #par(mfrow=c(2,2))
@@ -350,7 +346,7 @@ plot(lm2.mixed)
 ```
 By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
 
-```{r Heterogeneity processor and weight, echo=FALSE}
+```{r echo=FALSE}
 #comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
 #par(mfrow=c(2,2))
 processor5.distr <- rpar(lm2.mixed, "Processori5")
@@ -394,15 +390,15 @@ lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB",
 
 We need to compare the two new models with the previously chosen one (Fixed effect, no intercept) in order to choose which one to use. Same steps as the first choice of model.
 ### Fixed effects vs. uncorrelated random effects
-```{r Fixed effects vs. uncorrelated random effects, echo=FALSE}
+```{r echo=FALSE}
 lrtest(lm2, lm2.mixed) #Fixed effects vs. uncorrelated random effects
 ```
 ### Random effects but Uncorrelated vs. Random effects + all correlated
-```{r Uncorrelated random effects vs. all correlated random effects, echo=FALSE}
+```{r echo=FALSE}
 lrtest(lm2.mixed, lm2.mixed2) #Uncorrelated random effects vs. all correlated random effects
 ```
 ###  Random effects + all correlated vs.  Random effects + Partially correlated
-```{r partially correlated random effects vs. all correlated random effects, echo=FALSE}
+```{r echo=FALSE}
 lrtest(lm2.mixed2,lm2.mixed3) #partially correlated random effects vs. all correlated random effects
 ```
 
@@ -428,7 +424,7 @@ predict.mixed.mnl <- function(model, data, nresp=1000) {
 }
 ```
 
-```{r predict no bootstrap, echo=FALSE}
+```{r}
 set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
@@ -497,7 +493,7 @@ predictedShares
 }
 ```
 ### Preference share with bootstrap - Mixed model
-```{r predict bootstrap output - Mixed model, echo=FALSE}
+```{r}
 BootCI.predict.mixed.mnl(lm2.mixed2, profiles)
 ```
 
@@ -514,7 +510,7 @@ grid(nx=NA, ny=NULL)
 
 ### Effects of individual part and individual-level predictors
 In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen
-```{r individual part, echo=FALSE}
+```{r}
 PW.ind <- fitted(lm2.mixed2, type = "parameters")
 head(PW.ind)
 ```
