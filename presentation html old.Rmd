@@ -24,10 +24,9 @@ library(lattice)
 ```{r Loading Dataset, include=FALSE}
 laptops = read.csv("Dataset/laptops.csv", sep=";")
 
+
 ```
 
-
-<!-- Here we are converting the quantitative variables to qualitative before fitting it into the model. WE set 4GB, 126GB, i3, 0.8Kg as ref level for RAM, Memory, Proc and weight resp.This helps us to see how preferences changes overtime when we have higher config as an alternative-->
 ```{r Preparing data, include=FALSE}
 laptops$Price       <- as.factor(laptops$Price)
 laptops$RAM         <- factor(laptops$RAM, levels=c( "4GB", "8GB", "16GB", "32GB" ))
@@ -41,7 +40,7 @@ laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4"))
 * Project Description <br/>
 * Summary of all the analysis to be presented <br/>
 * Dataset description <br/>
-* Dataset balanced and Association of attributes<br/>
+* Is our dataset balanced?<br/>
 * Models to fit our data<br/>
 * Choosing models part 1<br/>
 * Are our users homogeneous?<br/>
@@ -55,29 +54,23 @@ laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4"))
 
 ## Project Description
 
-The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis. In this project, we will analyze the preferences of an individual when they purchase a laptop. As you already know, we have several options in the market when it comes to laptops. A customer usually does a thorough research before he/she makes the purchase. The final decision depends on several attributes of the product and its relevance to the customer. We study the relationship between the choice and product attributes. 
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis.
 
 ## Dataset description
-Our dataset represents the generated answers to questionnaires regarding the choice of laptops. It is represented in a long format, in other words, we have a row for each alternatives. We have 4 alternatives each for 7500 questions and 4 levels for each attributes. 
+Our dataset represents the generated answers to questionnaires regarding the choice of laptops.
 
+add code here about:
+summarizing the data - levels and attributes
+Quantity of each attributes
 ```{r Data description, echo=FALSE}
 summary(laptops)
 ```
 
 
-## Dataset balanced and Association of attributes
-
-In this part, we check whether the attributes are well balanced.
+## Is our dataset balanced?
 
 ```{r echo=FALSE}
-# To check balance, he used this function
-sapply(laptops, table)
-```
 
-Here, the attributes are properly balanced, which means that the frequencies across each levels of the attributes are equally distributed. There is no over/under representation in level of attributes.  
-
-Now we can look into the association of attributes with choice made by the respondent. The xtabs() which provides the joint distribution between two variables is used here.
-```{r}
 xtabs(choice ~ Price, data=laptops)
 xtabs(choice ~ RAM, data=laptops)
 xtabs(choice ~ Memory, data=laptops)
@@ -86,54 +79,32 @@ xtabs(choice ~ Weight, data=laptops)
 xtabs(choice ~ ScreenSize, data=laptops)
 ```
 
-
-From the joint distribution obtained, we can see that the customers highly prefer laptops with bigger screensize, high memory, a decent RAM of 8GB and i5 processor and are looking for products mostly at price range of 0.7K to 1K. A very few are opting for laptops with 12" screen and are interested in spending 2K on a laptop.
-
 ## Models to fit our data
-
-### Multinomial Logit Model(MNL)
-
-From the dataset, we can gather that the respondent had 4 alternatives to make his/her final choice; implying that the dependent variable is a qualitative multinomial variable with 4 levels. Multinomial Logit model is an appropriate one to fit this kind of data. MNL gives the measurement of association between each attributes and respondent choice.
-
-We use mlogit() function to fit the MNL model. However, the function requires us to organize the data in a special format by using dfidx(). 
-
 ```{r}
-laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F, levels=c(1,2,3,4))
+laptops.mlogit <- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F,levels=c(1,2,3,4))
 ```
 
-Now, we assess how attributes affects the choice. In the first model, we will consider the intercept parameters so that we can test the restrictions on them by comparing two models.
-
 ```{r}
-lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize , data = laptops.mlogit)
+lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
 summary(lm1)
-```
 
-In the summary of lm1 model, we can see that the model estimate coefficient of RAM8GB, RAM16GB and RAM32GB with respect to RAM4GB laptops measuring the preference. The laptops with 8GB RAM are more attracted to than RAM of 16GB whereas RAM of 32GB is the least attracted one. Similarly, in terms of memory the coefficients are estimated with respect to Memory126GB. In this case, laptops with 1TB memory has higher preference compared to 126GB When it comes to processors, i3 is taken as the reference value and from the est. coefficient, we can see that i5 is more preferred. The 12-inch and 0.7k is the reference point for screensize and price respectively. Among those attributes, we can see that 16 inch models are far more preferred with respect to 12 inch ones and for the price range, 0.7k itself is most preferred. The est. intercepts provide the preferences for the positions of the alternatives in each question. Here the values corresponding to those intercepts are very small implying that position of alternatives doesn't have much significance. 
-
-### Multinomial Logit Model(MNL) Without Intercept
-In order to formally test the significance of the intercept, we fit another model without the intercept parameters and perform a likelihood ratio test comparing both models.
-
-```{r}
 lm2 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
 summary(lm2)
 ```
 
 ## Choosing models part 1
-
 ```{r echo=FALSE}
-
-lrtest(lm1, lm2)
-print("")
+print("Testing if the models are siginificantly equivalent")
+lrtest(lm2, lm1)
+print("Since p-value is higher than our significance level (0.05), than we do not have enough evidence to reject null hypothesys.")
 ```
-Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with SL 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
 
-```{r Willingness to pay (not available for our data), include=FALSE}
+```{r Willingness to pay (not available for our data), eval=FALSE, include=FALSE}
 print("Analyze model with price as qualitative vs quantitative")
 lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
 summary(lm3)
 lrtest(lm3, lm2)
-coef(lm3)["RAM16GB"]/(coef(lm3)["as.numeric(as.character(Price))"]/1000)
-# print("since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative variable. This means that we cannot analyze the willingness-to-pay for each level's attribute.")
+print("since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative variable. This means that we cannot analyze the willingness-to-pay for each level's attribute.")
 ```
 
 ## Popular profiles (top 15)
@@ -274,7 +245,7 @@ summary(lm2.mixed)
 ```
 
 ## Correlated models
-```{r eval=FALSE, include=FALSE}
+```{r}
 # We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
 layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
 #par(mfrow=c(2,2))
@@ -299,13 +270,21 @@ plot(Weight1.5kg.distr)
 ```
 
 ## Choosing models part 2
+```{r}
+lm2.mixed2 <- update(lm2.mixed, correlation = TRUE)
+summary(lm2.mixed2)
+
+cov2cor(cov.mlogit(lm2.mixed2))
+
+summary(vcov(lm2.mixed2, what = "rpar", type = "cor"))
+
+lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB", "RAM32GB", "Memory256GB","Memory512GB", "Memory1T", "Processori5", "Processori7","Processori9", "Weight1kg", "Weight1.2kg", "Weight1.5kg", "ScreenSize13", "ScreenSize14", "ScreenSize16"))
+
+```
+
 
 ## Preference share of the users
 
 ## Product profiles
 
 ## Conclusion
-```{r}
-
-```
-
