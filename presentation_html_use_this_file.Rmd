@@ -139,6 +139,9 @@ coef(lm3)["RAM16GB"]/(coef(lm3)["as.numeric(as.character(Price))"]/1000)
 
 ## Profiles and preference share
 ### Popular profiles (top 15)
+
+From the survey dataset, we now try to extract the most popular laptop models using a frequency table.
+
 ```{r Frequency table, include=FALSE}
 #adding index
 laptops.chosen <- filter(laptops,laptops$choice == "1")
@@ -169,6 +172,10 @@ g + geom_bar(stat="identity", width = 0.5, fill="tomato2") +
 
 ```
 
+The graph above shows the top 15 popular profiles in the dataset. As we can see most of them are in the price range 0.7k with RAM and memory variants(4GB, 8GB in most cases and 126GB and 1TB respectively).
+
+Next step is to create a subset of designs for which we predict the preference shares. In order to do that, we initially create a set of all possible designs. From these possible designs we select the profile for further study.
+
 ```{r Function selecting profiles, include=FALSE}
 attributes <- list(Price=names(table(laptops.mlogit$Price)),
                    RAM=names(table(laptops.mlogit$RAM)),
@@ -189,6 +196,10 @@ ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
 ```
 
 ### Profiles chosen 
+
+
+The profiles are chosen based on 3 market levels: entry, mid-range and high performance. We choose 2 profiles corresponding to each levels.
+
 ```{r setting profiles, include=FALSE}
 #Entry market
 entry1 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 126,Processor = 3, Weight = 0.8,ScreenSize = 12)
@@ -213,6 +224,8 @@ profiles <- rbind(entry1, entry2,entry3, entry4, mid1, mid2, mid3, high1, high2,
 print(profiles)
 ```
 
+Now that we have chosen the profiles, we create a function to predict the preference shares for the profiles with the estimated model.
+
 ```{r Predict Function - Uncorrelated fixed effects, include=FALSE}
 predict.mnl <- function(model, data) {
   # Function for predicting preference shares from a MNL model 
@@ -230,6 +243,11 @@ predict.mnl <- function(model, data) {
 ```{r Preference share, echo=FALSE}
 predict.mnl(lm2, profiles)
 ```
+
+
+The table provides the computed preference share for each alternative profiles. Among the selected profiles, we can see that customer may choose the second profile 38.9% of times. Our planned product is the 5th profile which has 8% shares.  These preference shares are made relative to a specific given set of potential competitors and it may change for different set of profiles. Using the est. models we can assess how the updation in the attributes our planned product would affect the preference shares. 
+
+We can further study the impact of variations in the level of attributes by creating a preference share-sensitivity chart. This provides useful indications to the people that have made the design as they get a clear intuitive picture of how changes in the design influence the preference share.
 
 ```{r Preference share with bootstrap - Fixed model, include=FALSE}
 #######################################################################
@@ -325,7 +343,15 @@ barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
 grid(nx=NA, ny=NULL)
 ```
 
+The graph above shows the sensitivity chart for laoptop design with 16GB RAM, 512GB  memory, i7 processor, 16 inch screen size at 2K price range. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares.
+
+
 ## Are users homogeneous?
+
+Now we are going to fit mixed MNL model, where the coefficients vary randomly over respondents in the population, rather than being fixed. To estimate a multinomial logit model with random coefficients using "mlogit", we define a vector indicating which coefficients should vary across customers. 
+
+The mlogit() requires a character vector the same length as the coefficient vector with a letter code indicating the  distribution that random coefficients should follow across the respondents: "n" for  normal, "l" for log normal, "t" for truncated normal, and "u" for uniform. For this analysis, we assume that all the coefficients are normally distributed across the population and call our vector "lm2.rpar".
+
 ```{r lm2.rpar, include=FALSE}
 lm2.rpar <- rep("n", length=length(lm2$coef))
 names(lm2.rpar) <- names(lm2$coef)
@@ -333,13 +359,21 @@ lm2.rpar
 ```
 
 ### Mixed MNL (with Random Effect)
+
 In order to verify that, we are going to create a model that takes in consideration random effects (variation according to respondents).
+
 ```{r Mixed MNL (with Random Effect)}
 lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
 summary(lm2.mixed)
 ```
+
+In mixed MNL framework, we get a distribution of responedent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distruibution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
+
+By analyzing the std. deviation, we get the level of variablity in customer preference. Higher the est. std. deviation, higher the hetrogeneity in the customer preference. The std. deviation can be interpreted by comparing it with our est. mean value. If the absolute std deviation is greater than the absolute mean, we can say we have relevant heterogeneity in consumer preference. Higher the difference between the absolute values, stronger the relevance of hetrogeneity. 
+
+In the second table, gives the summary of distribution. If the sign remains the same across all the quartiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters "Weight1.5kg" and "Processori5" has a different signs across the quartiles implying substantial hetrogeneity. The other parameters are homogeneous across the quartiles indicating the customer preference in those attributes are homogeneous.  
 
 ### Distribution of the random effects - Level of heterogeneity
 ```{r Distribution of the random effects, echo=FALSE}
@@ -348,7 +382,8 @@ summary(lm2.mixed)
 #par(mfrow=c(2,2))
 plot(lm2.mixed)
 ```
-By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
+
+By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the i
 
 ```{r Heterogeneity processor and weight, echo=FALSE}
 #comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
