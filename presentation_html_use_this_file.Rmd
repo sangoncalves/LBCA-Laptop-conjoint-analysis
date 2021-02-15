@@ -383,7 +383,11 @@ In the second table, gives the summary of distribution. If the sign remains the 
 plot(lm2.mixed)
 ```
 
+<<<<<<< HEAD
 By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the i
+=======
+By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the customer preferences.
+>>>>>>> 448182b (latest)
 
 ```{r Heterogeneity processor and weight, echo=FALSE}
 #comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
