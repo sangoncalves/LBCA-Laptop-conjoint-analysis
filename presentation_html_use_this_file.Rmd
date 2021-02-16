@@ -56,7 +56,7 @@ laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4"))
 
 ## Project Description
 
-The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis. In this project, we will analyze the preferences of an individual when they purchase a laptop. As you already know, we have several options in the market when it comes to laptops. A customer usually does a thorough research before he/she makes the purchase. The final decision depends on several attributes of the product and its relevance to the customer. We study the relationship between the choice and product attributes. 
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis. In this project, we will analyze the preferences of an individual while purchasing a laptop. When it comes to laptops, we have several options in the market. A customer usually does a thorough research before he/she makes the purchase. The final decision depends on several attributes of the product and its relevance to the customer. We study the relationship between the choice and product attributes. 
 
 ## Dataset description
 Our dataset represents the generated answers to questionnaires regarding the choice of laptops. It is represented in a long format, in other words, we have a row for each alternatives. We have 4 alternatives each for 7500 questions and 4 levels for each attributes. 
@@ -88,7 +88,8 @@ xtabs(choice ~ ScreenSize, data=laptops)
 ```
 
 
-From the joint distribution obtained, we can see that the customers highly prefer laptops with bigger screensize, high memory, a decent RAM of 8GB and i5 processor and are looking for products mostly at price range of 0.7K to 1K. A very few are opting for laptops with 12" screen and are interested in spending 2K on a laptop.
+From the joint distribution obtained, we can see that the customers highly prefer laptops with bigger screensize, high memory, a decent RAM of 8GB and i5 processor and are looking for products mostly at price range of 0.7K to 1K.
+Very few are opting for laptops with 12" screen or are interested in spending 2K on a laptop.
 
 ## Models to fit our data
 
@@ -126,7 +127,7 @@ summary(lm2)
 lrtest(lm1, lm2)
 print("")
 ```
-Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with SL 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
+Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with significance level 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
 
 ```{r Willingness to pay (not available for our data), include=FALSE}
 print("Analyze model with price as qualitative vs quantitative")
@@ -174,7 +175,7 @@ g + geom_bar(stat="identity", width = 0.5, fill="tomato2") +
 
 The graph above shows the top 15 popular profiles in the dataset. As we can see most of them are in the price range 0.7k with RAM and memory variants(4GB, 8GB in most cases and 126GB and 1TB respectively).
 
-Next step is to create a subset of designs for which we predict the preference shares. In order to do that, we initially create a set of all possible designs. From these possible designs we select the profile for further study.
+Next step is to create a subset of designs for which we predict the preference shares. In order to do that, we initially create a set of all possible designs. From these possible designs we select a set of profiles for further studying them.
 
 ```{r Function selecting profiles, include=FALSE}
 attributes <- list(Price=names(table(laptops.mlogit$Price)),
@@ -198,7 +199,7 @@ ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
 ### Profiles chosen 
 
 
-The profiles are chosen based on 3 market levels: entry, mid-range and high performance. We choose 2 profiles corresponding to each levels.
+The profiles are chosen based on 3 market levels: entry, mid-range and high performance.
 
 ```{r setting profiles, include=FALSE}
 #Entry market
@@ -232,7 +233,7 @@ predict.mnl <- function(model, data) {
   # model: mlogit object returned by mlogit()
   # data: a data frame containing the set of designs for which you want to 
   #       predict shares.  Same format at the data used to estimate model. 
-  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1]
+  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1] #why do we use updated here?
   logitUtility <- data.model%*%model$coef
   share <- exp(logitUtility)/sum(exp(logitUtility))
   cbind(share, data)
@@ -244,6 +245,7 @@ predict.mnl <- function(model, data) {
 predict.mnl(lm2, profiles)
 ```
 
+#update the numbers of the table bellow.
 
 The table provides the computed preference share for each alternative profiles. Among the selected profiles, we can see that customer may choose the second profile 38.9% of times. Our planned product is the 5th profile which has 8% shares.  These preference shares are made relative to a specific given set of potential competitors and it may change for different set of profiles. Using the est. models we can assess how the updation in the attributes our planned product would affect the preference shares. 
 
@@ -369,11 +371,11 @@ lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenS
 summary(lm2.mixed)
 ```
 
-In mixed MNL framework, we get a distribution of responedent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distruibution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
+In mixed MNL framework, we get a distribution of respondent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distribution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
 
-By analyzing the std. deviation, we get the level of variablity in customer preference. Higher the est. std. deviation, higher the hetrogeneity in the customer preference. The std. deviation can be interpreted by comparing it with our est. mean value. If the absolute std deviation is greater than the absolute mean, we can say we have relevant heterogeneity in consumer preference. Higher the difference between the absolute values, stronger the relevance of hetrogeneity. 
+By analyzing the std. deviation, we get the level of variability in customer preference. Higher the est. std. deviation, higher the heterogeneity in the customer preference. The std. deviation can be interpreted by comparing it with our est. mean value. If the absolute std deviation is greater than the absolute mean, we can say we have relevant heterogeneity in consumer preference. Higher the difference between the absolute values, stronger the relevance of heterogeneity. 
 
-In the second table, gives the summary of distribution. If the sign remains the same across all the quartiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters "Weight1.5kg" and "Processori5" has a different signs across the quartiles implying substantial hetrogeneity. The other parameters are homogeneous across the quartiles indicating the customer preference in those attributes are homogeneous.  
+In the second table, gives the summary of distribution. If the sign remains the same across all the quantiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters "Weight1.5kg" and "Processori5" has a different signs across the quantiles implying substantial heterogeneity. The other parameters are homogeneous across the quantiles indicating the customer preference in those attributes are homogeneous.  
 
 ### Distribution of the random effects - Level of heterogeneity
 ```{r Distribution of the random effects, echo=FALSE}
@@ -383,11 +385,9 @@ In the second table, gives the summary of distribution. If the sign remains the 
 plot(lm2.mixed)
 ```
 
-<<<<<<< HEAD
-By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the i
-=======
+
 By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the customer preferences.
->>>>>>> 448182b (latest)
+
 
 ```{r Heterogeneity processor and weight, echo=FALSE}
 #comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
