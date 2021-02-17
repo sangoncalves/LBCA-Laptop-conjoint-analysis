@@ -131,20 +131,9 @@ summary(lm2)
 ### Choosing models part 1
 
 ```{r lrtest(lm1, lm2), echo=FALSE}
-
 lrtest(lm1, lm2)
-print("")
 ```
 Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with significance level 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
-
-```{r Willingness to pay (not available for our data), include=FALSE}
-print("Analyze model with price as qualitative vs quantitative")
-lm3 <- mlogit(choice ~  as.numeric(as.character(Price)) + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
-summary(lm3)
-lrtest(lm3, lm2)
-coef(lm3)["RAM16GB"]/(coef(lm3)["as.numeric(as.character(Price))"]/1000)
-# print("since our p-value is smaller than our significance level(0.05), we cannot use price as quantitative variable. This means that we cannot analyze the willingness-to-pay for each level's attribute.")
-```
 
 ## Profiles and preference share
 ### Popular profiles (top 15)
@@ -267,7 +256,7 @@ source("BootCI.predict.mnl.R")
 This function is to obtain the Bootstrap Confidence Intervals, it will re-estimate the models and calculate the preference share several times. Here we estimate the model for random samples and obtain the values estimated corresponding to each parameters. From this we will obtain the bootstrap distribution from which we can get the CI. The function takes model(which should be used to compute preference share), chosen set of profiles. Among these chosen profiles, the first one will be our profile, which is to be assessed while comparing with other products that dominates the market. In short, we are trying to find the preference share of our profile in comparison with other product profiles. By default the function as 500 simulations with 95% CI. So this function will return the preference shares along with the bootstrap CI corresponding to each profiles. 
 
 ### Preference share with bootstrap - Fixed model
-```{r predict bootstrap - Fixed model, eval=FALSE, include=FALSE}
+```{r predict bootstrap - Fixed model, echo=FALSE}
 BootCI.predict.mnl(lm2,profiles)
 ```
 
@@ -310,8 +299,7 @@ barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
 grid(nx=NA, ny=NULL)
 ```
 
-<!-- The graph above shows the sensitivity chart for laptop design with 16GB RAM, 512GB  memory, i7 processor, 16 inch screen size at 2K price range. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares. -->
-
+ The graph above is the sensitivity chart for laptop design with 8GB RAM, 256GB  memory, i5 processor, 13 inch screen size at 1K price range which weigh about 1kg. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares. 
 
 ## Are users homogeneous?
 
@@ -333,7 +321,8 @@ In order to verify that, we are going to create a model that takes in considerat
 lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
-summary(lm2.mixed)
+# summary(lm2.mixed)
+summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]<=0.05, ]
 ```
 
 In mixed MNL framework, we get a distribution of respondent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distribution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
@@ -342,14 +331,7 @@ By analyzing the std. deviation, we get the level of variability in customer pre
 
 In the second table, gives the summary of distribution. If the sign remains the same across all the quantiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters "Weight1.5kg" and "Processori5" has a different signs across the quantiles implying substantial heterogeneity. The other parameters are homogeneous across the quantiles indicating the customer preference in those attributes are homogeneous.  
 
-### Distribution of the random effects - Level of heterogeneity
-```{r Distribution of the random effects, echo=FALSE}
-# We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
-#layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
-#par(mfrow=c(2,2))
-plot(lm2.mixed)
-```
-
+### Analysing heterogeneity
 
 By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the customer preferences.
 
@@ -388,7 +370,7 @@ cov2cor(cov.mlogit(lm2.mixed2))
 summary(vcov(lm2.mixed2, what = "rpar", type = "cor"))
 ```
 
-By analysing the signs from random effect coefficients, we can update the model to contain just the variables that are correlated.
+By analyzing the signs from random effect coefficients, we can update the model to contain just the variables that are correlated.
 
 ```{r Random effect + Correlated}
 lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB", "RAM32GB", "Memory256GB","Memory512GB", "Memory1T", "Processori5", "Processori7","Processori9", "Weight1kg", "Weight1.2kg", "Weight1.5kg", "ScreenSize13", "ScreenSize14", "ScreenSize16"))
@@ -401,14 +383,25 @@ We need to compare the two new models with the previously chosen one (Fixed effe
 ```{r Fixed effects vs. uncorrelated random effects, echo=FALSE}
 lrtest(lm2, lm2.mixed) #Fixed effects vs. uncorrelated random effects
 ```
+
+Here we are compare the multinomial model with fixed attributes and the model with uncorrelated random effects. The p-value is very low (~ 0) which implies, we have enough sample evidence to reject the null hypothesis that variances with random effects are 0. That is random effects is significant in explaining consumer preferences. In this case, model that consider heterogeneity is found to be a better fit than the model that assume the homogeneity.
+
 ### Random effects but Uncorrelated vs. Random effects + all correlated
 ```{r Uncorrelated random effects vs. all correlated random effects, echo=FALSE}
 lrtest(lm2.mixed, lm2.mixed2) #Uncorrelated random effects vs. all correlated random effects
 ```
+
+Since we established that models with random effects are better fit, now we can compare the model with uncorrelated random effects with the model with all correlated random effects. From the Likelihood ratio test, we get a low p-value which implies, the random effects are not independent.
+The preferences of certain levels are likely associated to preferences of other levels. So we can say that, model with correlated random effects is a better fit than uncorrelated one.
+
 ###  Random effects + all correlated vs.  Random effects + Partially correlated
 ```{r partially correlated random effects vs. all correlated random effects, echo=FALSE}
 lrtest(lm2.mixed2,lm2.mixed3) #partially correlated random effects vs. all correlated random effects
 ```
+
+The lm2.mixed2 is the multinomial model with all correlated random effects whereas lm2.mixed3 is a restricted model with some of the correlated random effects. This test is to determine whether the restricted model is better fit than the model with larger model. 
+
+We obtain a low p-value from the LR test which implies assessing consumer preferences using the model with all correlated random effects (larger model) is a better fit. So among all the models we have seen so far, lm2.mixed2 is the best model for assessing the condumer preferences.
 
 ## Preference share prediction (Mixed MNL)
 ```{r Predict Function Correlated Random Effect, include=FALSE}
@@ -437,25 +430,6 @@ set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
 
-```{r}
-source("BootCI.predict.mixed.mnl.R")
-```
-
-### Preference share with bootstrap - Mixed model
-```{r predict bootstrap output - Mixed model, eval=FALSE, include=FALSE}
-BootCI.predict.mixed.mnl(lm2.mixed2, profiles)
-```
-
-### Trade-off attributes graph - Mixed MNL
-```{r Trade-off attributes graph - Mixed MNL, echo=FALSE}
-tradeoff <- sensitivity.mnl(lm2.mixed2, attributes, base.data, competitor.data)
-print(tradeoff)
-barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
-        ylab="Change in Share for the Planned Product Design", 
-        ylim=c(-0.1,0.4))
-grid(nx=NA, ny=NULL)
-```
-
 
 ### Effects of individual part and individual-level predictors
 In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen
@@ -465,7 +439,5 @@ head(PW.ind)
 ```
 
 ## Conclusion
-```{r}
 
-```
 
