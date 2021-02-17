@@ -131,9 +131,7 @@ summary(lm2)
 ### Choosing models part 1
 
 ```{r lrtest(lm1, lm2), echo=FALSE}
-
 lrtest(lm1, lm2)
-print("")
 ```
 Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with significance level 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
 
@@ -333,7 +331,9 @@ In order to verify that, we are going to create a model that takes in considerat
 lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
-summary(lm2.mixed)
+#summary(lm2.mixed)
+summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]<=0.05, ]
+
 ```
 
 In mixed MNL framework, we get a distribution of respondent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distribution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
@@ -342,16 +342,10 @@ By analyzing the std. deviation, we get the level of variability in customer pre
 
 In the second table, gives the summary of distribution. If the sign remains the same across all the quantiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters "Weight1.5kg" and "Processori5" has a different signs across the quantiles implying substantial heterogeneity. The other parameters are homogeneous across the quantiles indicating the customer preference in those attributes are homogeneous.  
 
-### Distribution of the random effects - Level of heterogeneity
-```{r Distribution of the random effects, echo=FALSE}
-# We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity
-#layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))
-#par(mfrow=c(2,2))
-plot(lm2.mixed)
-```
+### Analysing heterogeneity
 
 
-By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the customer preferences.
+By comparing the sign of the quantiles we can identify that "Processori5" and "Weight1.5kg" have different signs, which could imply heterogeneity in the customer preferences.
 
 
 ```{r Heterogeneity processor and weight, echo=FALSE}
@@ -386,6 +380,7 @@ summary(lm2.mixed2)
 
 cov2cor(cov.mlogit(lm2.mixed2))
 summary(vcov(lm2.mixed2, what = "rpar", type = "cor"))
+
 ```
 
 By analysing the signs from random effect coefficients, we can update the model to contain just the variables that are correlated.
@@ -396,7 +391,7 @@ lm2.mixed3 <- update(lm2.mixed2, correlation = c("Price1.5", "RAM8GB","RAM16GB",
 
 ### Choosing models part 2
 
-We need to compare the two new models with the previously chosen one (Fixed effect, no intercept) in order to choose which one to use. Same steps as the first choice of model.
+We need to compare the two new models (lm2.mixed) with the previously chosen one (Fixed effect, no intercept) in order to choose which one to use. Same steps as the first choice of model.
 ### Fixed effects vs. uncorrelated random effects
 ```{r Fixed effects vs. uncorrelated random effects, echo=FALSE}
 lrtest(lm2, lm2.mixed) #Fixed effects vs. uncorrelated random effects
@@ -430,30 +425,6 @@ predict.mixed.mnl <- function(model, data, nresp=1000) {
   }
   cbind(colMeans(shares), data)
 }
-```
-
-```{r predict no bootstrap, echo=FALSE}
-set.seed(1234)
-predict.mixed.mnl(lm2.mixed2, data=profiles)
-```
-
-```{r}
-source("BootCI.predict.mixed.mnl.R")
-```
-
-### Preference share with bootstrap - Mixed model
-```{r predict bootstrap output - Mixed model, eval=FALSE, include=FALSE}
-BootCI.predict.mixed.mnl(lm2.mixed2, profiles)
-```
-
-### Trade-off attributes graph - Mixed MNL
-```{r Trade-off attributes graph - Mixed MNL, echo=FALSE}
-tradeoff <- sensitivity.mnl(lm2.mixed2, attributes, base.data, competitor.data)
-print(tradeoff)
-barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
-        ylab="Change in Share for the Planned Product Design", 
-        ylim=c(-0.1,0.4))
-grid(nx=NA, ny=NULL)
 ```
 
 
