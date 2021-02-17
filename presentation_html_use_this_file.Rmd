@@ -226,7 +226,7 @@ high1 <- ProductSelection(Price = 2, RAM = 16,Memory = 512, Processor = 7, Weigh
 high2 <- ProductSelection(Price = 2, RAM = 32,Memory = 1, Processor = 9, Weight = 1.5,ScreenSize = 14)
 high3 <- ProductSelection(Price = 0.7, RAM = 4,Memory = 1,Processor = 9, Weight = 1,ScreenSize = 16)
 
-profiles <- rbind(entry1, entry2,entry3, entry4, mid1, mid2, mid3, high1, high2, high3)
+profiles <- rbind(mid1,entry1, entry2,entry3, entry4, mid2, mid3, high1, high2, high3)
 ```
 
 ```{r profiles output, echo=FALSE}
@@ -241,7 +241,7 @@ predict.mnl <- function(model, data) {
   # model: mlogit object returned by mlogit()
   # data: a data frame containing the set of designs for which you want to 
   #       predict shares.  Same format at the data used to estimate model. 
-  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1] #why do we use updated here?
+  data.model <- model.matrix(update(model$formula, 0 ~ .), data = data)[,-1] 
   logitUtility <- data.model%*%model$coef
   share <- exp(logitUtility)/sum(exp(logitUtility))
   cbind(share, data)
@@ -259,64 +259,15 @@ The table provides the computed preference share for each alternative profiles. 
 
 We can further study the impact of variations in the level of attributes by creating a preference share-sensitivity chart. This provides useful indications to the people that have made the design as they get a clear intuitive picture of how changes in the design influence the preference share.
 
-```{r Preference share with bootstrap - Fixed model, include=FALSE}
-#######################################################################
-### Function for predicting preference shares from a MNL model with ### 
-### bootstrap percentiles prediction intervals                      ### 
-#######################################################################
-
-# model: mlogit object returned by mlogit()
-# data: a data frame containing the set of designs for which you want to 
-#       predict shares.  Same format of the data used to estimate model. 
-# nsim: number of bootstrap samples, default is 500
-# conflevel: desired confidence level, default is 0.95
-# library "parallel" is necessary
-library(parallel)
-BootCI.predict.mnl <- function(model, data, nsim=500, conflevel=0.95) {
-dataModel <- model$model
-dataModel$probabilities <- NULL
-dataModel$linpred <- NULL
-idx <- dataModel$idx 
-dataModel$idx <- NULL
-dataModel <- data.frame(dataModel, idx)
-idVar <- unique(dataModel[,names(idx)[1]])
-
-bootstrapping <- function(x) {
-  idbootsamp <- data.frame(sample(idVar, replace=T))
-  names(idbootsamp) <- names(idx)[1]
-  bootsamp <- merge(idbootsamp, dataModel, by=names(idx)[1], all.x=T)
-  bootsamp[,names(idx)[1]] <- rep(1:length(table(idx[,1])), each=length(table(idx[,3])))
-  bootsamp.mlogit  <- dfidx(bootsamp, idx = list(c(names(idx)[1:2]), names(idx)[3]),
-                            drop.index=F)    
-  bootfit <- update(model, data = bootsamp.mlogit)
-  data.model <- model.matrix(update(bootfit$formula, 0 ~ .), data = data)[,-1]
-  logitUtility <- data.model%*%bootfit$coef
-  share <- exp(logitUtility)/sum(exp(logitUtility))
-  share
-}
-
-cl <- makeCluster(detectCores())
-  clusterEvalQ(cl, library(mlogit))
-  clusterExport(cl, varlist=c("idVar", "dataModel", "idx", "model", "data"), 
-                envir=environment())
-  bootdistr <- parLapply(cl, 1:nsim, fun=bootstrapping)
-stopCluster(cl)
-
-bootdistr <- do.call(cbind, bootdistr)
-lowl <- (1-conflevel)/2
-upl <- 1-lowl  
-bootperc <- t(apply(bootdistr, 1, function(x) quantile(x, probs=c(lowl, upl))))
-pointpred <- predict.mnl(model, data)
-predictedShares <- cbind(pointpred[,1], bootperc, pointpred[,2:ncol(pointpred)])
-names(predictedShares)[1] <- "share" 
-predictedShares
-}
+```{r}
+source("BootCI.predict.mnl.R")
 ```
 
-This funtion is to obtain the Bootstrap Confidence Intervals, it will re-estimate the models and calculate the preference share several times. Here we estimate the model for random samples and obtain the values estimated corresponding to each parameters. From this we will obtain the bootstrap distribution from which we can get the CI. The function takes model(which should be used to compute preference share), chosen set of profiles. Among these chosen profiles, the first one will be our profile, which is to be assessed while comparing with other products that dominates the market. In short, we are trying to find the preference share of our profile in comparison with other product profiles. By default the function as 500 simulations with 95% CI. So this function will return the preference shares along with the bootstrap CI corresponding to each profiles. 
+
+This function is to obtain the Bootstrap Confidence Intervals, it will re-estimate the models and calculate the preference share several times. Here we estimate the model for random samples and obtain the values estimated corresponding to each parameters. From this we will obtain the bootstrap distribution from which we can get the CI. The function takes model(which should be used to compute preference share), chosen set of profiles. Among these chosen profiles, the first one will be our profile, which is to be assessed while comparing with other products that dominates the market. In short, we are trying to find the preference share of our profile in comparison with other product profiles. By default the function as 500 simulations with 95% CI. So this function will return the preference shares along with the bootstrap CI corresponding to each profiles. 
 
 ### Preference share with bootstrap - Fixed model
-```{r predict bootstrap - Fixed model, echo=FALSE}
+```{r predict bootstrap - Fixed model, eval=FALSE, include=FALSE}
 BootCI.predict.mnl(lm2,profiles)
 ```
 
@@ -342,12 +293,12 @@ sensitivity.mnl <- function(model, attrib, base.data, competitor.data) {
   data.frame(level=unlist(attrib), share=share, increase=share-base.share)
 }
 
-base.data <- profiles[5,]
-competitor.data <- profiles[-5,]
+base.data <- profiles[1,]
+competitor.data <- profiles[-1,]
 tradeoff <- sensitivity.mnl(lm2, attributes, base.data, competitor.data)
 ```
 
-The preference shares are in logit scale it difficult to interpret it. Thus we use sensitivity analysis by stuying how preference share changes as each level of each attributes are changed one after the other. This function intakes the model, attributes, reference profile: one which is used to study the sensitivity of attributes and competitive set of profiles as the input. 
+The preference shares are in logit scale it difficult to interpret it. Thus we use sensitivity analysis by studying how preference share changes as each level of each attributes are changed one after the other. This function intakes the model, attributes, reference profile: one which is used to study the sensitivity of attributes and competitive set of profiles as the input. 
 
 ### Trade-off attributes graph - MNL
 ```{r Trade-off attributes graph - MNL, echo=FALSE}
@@ -486,71 +437,12 @@ set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
 
-```{r Preference share with bootstrap - Mixed model, include=FALSE}
-#######################################################################
-### Function for predicting preference shares from a MNL model with ### 
-### bootstrap percentiles prediction intervals                      ### 
-#######################################################################
-
-# model: mlogit object returned by mlogit()
-# data: a data frame containing the set of designs for which you want to 
-#       predict shares.  Same format of the data used to estimate model. 
-# nsim: number of bootstrap samples, default is 500
-# conflevel: desired confidence level, default is 0.95
-# nresp: number of representative respondents, default is 1000
-# library "parallel" is necessary
-
-BootCI.predict.mixed.mnl <- function(model, data, nsim=500, conflevel=0.95, nresp=1000) {
-dataModel <- model$model
-dataModel$probabilities <- NULL
-dataModel$linpred <- NULL
-idx <- dataModel$idx 
-dataModel$idx <- NULL
-dataModel <- data.frame(dataModel, idx)
-idVar <- unique(dataModel[,names(idx)[1]])
-
-bootstrapping <- function(x) {
-  idbootsamp <- data.frame(sample(idVar, replace=T))
-  names(idbootsamp) <- names(idx)[1]
-  bootsamp <- merge(idbootsamp, dataModel, by=names(idx)[1], all.x=T)
-  bootsamp[,names(idx)[1]] <- rep(1:length(table(idx[,1])), each=length(table(idx[,3])))
-  bootsamp.mlogit  <- dfidx(bootsamp, idx = list(c(names(idx)[1:2]), names(idx)[3]),
-                            drop.index=F)    
-  bootfit <- update(model, data = bootsamp.mlogit)
-  data.model <- model.matrix(update(bootfit$formula, 0 ~ .), data = data)[,-1]
-  coef.Sigma <- cov.mlogit(bootfit)
-  coef.mu <- bootfit$coef[1:dim(coef.Sigma)[1]]
-  draws <- mvrnorm(n=nresp, coef.mu, coef.Sigma)
-  shares <- matrix(NA, nrow=nresp, ncol=nrow(data))
-  for (i in 1:nresp) {
-    utility <- data.model%*%draws[i,]
-    share <- exp(utility)/sum(exp(utility))
-    shares[i,] <- share
-  }
-  colMeans(shares)
-}
-
-cl <- makeCluster(detectCores())
-  clusterEvalQ(cl, {
-                library(mlogit)
-                library(MASS) })
-  clusterExport(cl, varlist=c("idVar", "dataModel", "idx", "model", "data", "nresp", 
-                paste(model$call$rpar)), envir=environment())
-  bootdistr <- parLapply(cl, 1:nsim, fun=bootstrapping)
-stopCluster(cl)
-
-bootdistr <- do.call(cbind, bootdistr)
-lowl <- (1-conflevel)/2
-upl <- 1-lowl  
-bootperc <- t(apply(bootdistr, 1, function(x) quantile(x, probs=c(lowl, upl))))
-pointpred <- predict.mixed.mnl(model, data, nresp)
-predictedShares <- cbind(pointpred[,1], bootperc, pointpred[,2:ncol(pointpred)])
-names(predictedShares)[1] <- "share" 
-predictedShares
-}
+```{r}
+source("BootCI.predict.mixed.mnl.R")
 ```
+
 ### Preference share with bootstrap - Mixed model
-```{r predict bootstrap output - Mixed model, echo=FALSE}
+```{r predict bootstrap output - Mixed model, eval=FALSE, include=FALSE}
 BootCI.predict.mixed.mnl(lm2.mixed2, profiles)
 ```
 
