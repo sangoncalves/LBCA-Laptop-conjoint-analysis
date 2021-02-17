@@ -431,55 +431,25 @@ set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
 
-As can be noticed, there was hardly any changes. The attribute with major changes kept being the memory (1T)
+#Computing the preference share of the New Product profile
 
-```{r Sensitivity Function2, include=FALSE}
-sensitivity.mnl.mixed <- function(model, attrib, base.data, competitor.data) {
-  # Function for creating data for a preference share-sensitivity chart
-  # model: mlogit object returned by mlogit() function
-  # attrib: list of vectors with attribute levels to be used in sensitivity
-  # base.data: data frame containing baseline design of target product
-  # competitor.data: data frame contining design of competitive set
-  data <- rbind(base.data, competitor.data)
-  base.share <- predict.mixed.mnl(model, data)[1,1]
-  share <- NULL
-  for (a in seq_along(attrib)) {
-    for (i in attrib[[a]]) {
-      data[1,] <- base.data
-      data[1,a] <- i
-      share <- c(share, predict.mixed.mnl(model, data)[1,1])
-    }
-  }
-  data.frame(level=unlist(attrib), share=share, increase=share-base.share)
-}
-
-base.data <- profiles[1,]
-competitor.data <- profiles[-1,]
-```
+Here we are estimating the preference share of product profile with some proposed changes that can 
+increase its acceptance rate. So our new reference profile will have an updation in the price and memory attributes, from 1K to 1.5K and 256GB to 1T respectively.
 
 
+```{r}
+proposed.profile <- ProductSelection(Price = 1.5, RAM = 8,Memory = 1,Processor = 5, Weight = 1, ScreenSize = 13)
+profiles.new <- rbind(proposed.profile,entry1, entry2,entry3, entry4, mid2, mid3, high1, high2, high3)
+set.seed(1234)
+predict.mixed.mnl(lm2.mixed2, data=profiles.new)
 
-### Trade-off attributes graph - Mixed MNL
-```{r Trade-off attributes Mixed model graph - MNL, echo=FALSE}
-options(scipen = 999)
-tradeoff.mixed <- sensitivity.mnl.mixed(lm2.mixed2, attributes, base.data, competitor.data)
-print(tradeoff.mixed)
-barplot(tradeoff.mixed$increase, horiz=FALSE, names.arg=tradeoff.mixed$level,
-        ylab="Change in Share for the Planned Product Design", 
-        ylim=c(-0.1,0.4))
-grid(nx=NA, ny=NULL)
-```
-
-The graph above is the sensitivity chart with price - 1k, RAM - 8GB, memory - 256GB, processor -	i5, weight - 1kg, screensize -	13" as reference profile configuration. We can see that, increasing the memory from 256GB to 1TB would also increase the preference shares by 14% and increasing the screensize to 16" can also increase the preference share by 3%. Any change in RAM size, processor or weight will have a negative effect on the preference shares. 
-
-### Effects of individual part and individual-level predictors
-In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen.
-
-```{r individual part, echo=FALSE}
-PW.ind <- fitted(lm2.mixed2, type = "parameters")
-head(PW.ind)
 ```
 
 ## Conclusion
 
-In summary, the finding of our analysis is that the attribute that represents the biggest change in preference was memory (1T) and the costumers are homogeneous regarding this preference. The attributes that presented features of heterogeneity are weight (1.5) and processor (i5). The model chosen as the best representing our data was "Random effects + all correlated" (lm2.mixed2). Finally, is necessary to analyse if would be possible to increase the memory of our desired product without compromising much the price in order to increase the preference share.
+The attributes that presented properties of heterogeneity were weight (1.5) and processor (i5). The model chosen as the best representing our data was "Random effects + all correlated attributes" (lm2.mixed2).Also, the attribute that represents the biggest change in preference in relation to our selected profile was "*memory 1T*" (~12%). 
+
+One of the strategies that we could persue, if our production allows, is to increase the price from 1K to 1.5K and increase the memory from 256GB to 1T. If we use this strategy we could have a significant increase of preference share which nulifies the effect of the price increment on it. In this case, the preference share will change from ~*1.5%* to *16%*.
+
+
+

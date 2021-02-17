@@ -479,7 +479,7 @@ summary(lm1)</code></pre>
 ## 0.24573 0.25267 0.25227 0.24933 
 ## 
 ## nr method
-## 6 iterations, 0h:0m:1s 
+## 6 iterations, 0h:0m:2s 
 ## g&#39;(-H)^-1g = 2.15E-06 
 ## successive function values within tolerance limits 
 ## 
@@ -530,7 +530,7 @@ summary(lm2)</code></pre>
 ## 0.24573 0.25267 0.25227 0.24933 
 ## 
 ## nr method
-## 6 iterations, 0h:0m:1s 
+## 6 iterations, 0h:0m:2s 
 ## g&#39;(-H)^-1g = 2.11E-06 
 ## successive function values within tolerance limits 
 ## 
@@ -618,16 +618,16 @@ summary(lm2)</code></pre>
 <div id="preference-share-with-bootstrap---fixed-model" class="section level3">
 <h3>Preference share with bootstrap - Fixed model</h3>
 <pre><code>##          share        2.5%       97.5% Price  RAM Memory Processor Weight
-## 1  0.019110330 0.015763750 0.023235194     1  8GB  256GB        i5    1kg
-## 2  0.004386443 0.003574785 0.005193778   0.7  4GB  126GB        i3  0.8kg
-## 3  0.022159508 0.018838335 0.025696171     1  4GB  126GB        i3  1.2kg
-## 4  0.195533286 0.179435790 0.212848126   0.7  8GB  126GB        i3  1.2kg
-## 5  0.589102805 0.558860868 0.619052395   0.7  8GB     1T        i3  1.2kg
-## 6  0.002365335 0.001797621 0.002954646   1.5 16GB  512GB        i7  1.5kg
-## 7  0.093923556 0.082586980 0.107102356   0.7  4GB  126GB        i5  1.2kg
-## 8  0.004933601 0.003980478 0.006032636     2 16GB  512GB        i7  1.2kg
-## 9  0.003986239 0.003188838 0.004809564     2 32GB     1T        i9  1.5kg
-## 10 0.064498897 0.055965692 0.074012425   0.7  4GB     1T        i9    1kg
+## 1  0.019110330 0.015801064 0.022819051     1  8GB  256GB        i5    1kg
+## 2  0.004386443 0.003624870 0.005122934   0.7  4GB  126GB        i3  0.8kg
+## 3  0.022159508 0.018992501 0.025830147     1  4GB  126GB        i3  1.2kg
+## 4  0.195533286 0.179117084 0.213353233   0.7  8GB  126GB        i3  1.2kg
+## 5  0.589102805 0.559686089 0.616875377   0.7  8GB     1T        i3  1.2kg
+## 6  0.002365335 0.001854727 0.003038243   1.5 16GB  512GB        i7  1.5kg
+## 7  0.093923556 0.083120184 0.107552534   0.7  4GB  126GB        i5  1.2kg
+## 8  0.004933601 0.004042816 0.005931809     2 16GB  512GB        i7  1.2kg
+## 9  0.003986239 0.003196249 0.004833010     2 32GB     1T        i9  1.5kg
+## 10 0.064498897 0.055425197 0.074269823   0.7  4GB     1T        i9    1kg
 ##    ScreenSize
 ## 1          13
 ## 2          12
@@ -683,43 +683,86 @@ summary(lm2)</code></pre>
 <pre class="r"><code>lm2.mixed &lt;- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
-# summary(lm2.mixed)
-summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]&lt;=0.05, ]</code></pre>
-<pre><code>##                   Estimate Std. Error    z-value     Pr(&gt;|z|)
-## Price1          -0.5132055 0.05062533 -10.137327 0.000000e+00
-## Price1.5        -0.6360522 0.05163892 -12.317302 0.000000e+00
-## Price2          -1.1021390 0.05423515 -20.321488 0.000000e+00
-## RAM8GB           1.0866197 0.05075124  21.410704 0.000000e+00
-## RAM16GB         -0.8234287 0.05608687 -14.681309 0.000000e+00
-## RAM32GB         -0.9219033 0.05457347 -16.892884 0.000000e+00
-## Memory256GB     -1.2948803 0.05679727 -22.798282 0.000000e+00
-## Memory512GB     -1.2160421 0.05678602 -21.414461 0.000000e+00
-## Memory1T         1.1980059 0.05102649  23.478117 0.000000e+00
-## Processori5      0.1973797 0.04944016   3.992295 6.543682e-05
-## Processori7     -0.2233641 0.04999526  -4.467705 7.906332e-06
-## Processori9     -1.3480284 0.05745708 -23.461483 0.000000e+00
-## Weight1kg        0.8490192 0.05444168  15.595021 0.000000e+00
-## Weight1.2kg      1.0807961 0.05402016  20.007275 0.000000e+00
-## Weight1.5kg     -0.2043261 0.05570425  -3.668052 2.444053e-04
-## ScreenSize13     1.2994124 0.06186926  21.002551 0.000000e+00
-## ScreenSize14     2.2003463 0.06464320  34.038326 0.000000e+00
-## ScreenSize16     2.3325170 0.06449941  36.163387 0.000000e+00
-## sd.Price1       -0.4543414 0.05992908  -7.581318 3.419487e-14
-## sd.Price1.5      0.6829425 0.05673337  12.037757 0.000000e+00
-## sd.Price2        0.2743263 0.06242345   4.394604 1.109751e-05
-## sd.RAM16GB       0.5723488 0.06934006   8.254229 2.220446e-16
-## sd.RAM32GB       0.1569467 0.06954851   2.256650 2.402994e-02
-## sd.Memory256GB   0.3992568 0.06670529   5.985383 2.158810e-09
-## sd.Memory512GB   0.3883856 0.06182461   6.282054 3.341285e-10
-## sd.Memory1T     -0.1484515 0.07040261  -2.108608 3.497842e-02
-## sd.Processori5   0.7067645 0.06064858  11.653440 0.000000e+00
-## sd.Processori7   0.3052744 0.06068331   5.030616 4.889077e-07
-## sd.Processori9   0.4380292 0.07099657   6.169723 6.840959e-10
-## sd.Weight1kg     0.6055259 0.05417629  11.176954 0.000000e+00
-## sd.Weight1.2kg   0.4346787 0.06041791   7.194534 6.268319e-13
-## sd.Weight1.5kg   0.3452684 0.06650429   5.191671 2.084147e-07
-## sd.ScreenSize13 -0.1444485 0.06882077  -2.098908 3.582497e-02
-## sd.ScreenSize14  0.8447455 0.05383507  15.691362 0.000000e+00</code></pre>
+summary(lm2.mixed)</code></pre>
+<pre><code>## 
+## Call:
+## mlogit(formula = choice ~ Price + RAM + Memory + Processor + 
+##     Weight + ScreenSize | -1, data = laptops.mlogit, rpar = lm2.rpar, 
+##     correlation = FALSE, panel = TRUE)
+## 
+## Frequencies of alternatives:choice
+##       1       2       3       4 
+## 0.24573 0.25267 0.25227 0.24933 
+## 
+## bfgs method
+## 31 iterations, 0h:1m:6s 
+## g&#39;(-H)^-1g = 1.14E-07 
+## gradient close to zero 
+## 
+## Coefficients :
+##                  Estimate Std. Error  z-value  Pr(&gt;|z|)    
+## Price1          -0.513206   0.050625 -10.1373 &lt; 2.2e-16 ***
+## Price1.5        -0.636052   0.051639 -12.3173 &lt; 2.2e-16 ***
+## Price2          -1.102139   0.054235 -20.3215 &lt; 2.2e-16 ***
+## RAM8GB           1.086620   0.050751  21.4107 &lt; 2.2e-16 ***
+## RAM16GB         -0.823429   0.056087 -14.6813 &lt; 2.2e-16 ***
+## RAM32GB         -0.921903   0.054573 -16.8929 &lt; 2.2e-16 ***
+## Memory256GB     -1.294880   0.056797 -22.7983 &lt; 2.2e-16 ***
+## Memory512GB     -1.216042   0.056786 -21.4145 &lt; 2.2e-16 ***
+## Memory1T         1.198006   0.051026  23.4781 &lt; 2.2e-16 ***
+## Processori5      0.197380   0.049440   3.9923 6.544e-05 ***
+## Processori7     -0.223364   0.049995  -4.4677 7.906e-06 ***
+## Processori9     -1.348028   0.057457 -23.4615 &lt; 2.2e-16 ***
+## Weight1kg        0.849019   0.054442  15.5950 &lt; 2.2e-16 ***
+## Weight1.2kg      1.080796   0.054020  20.0073 &lt; 2.2e-16 ***
+## Weight1.5kg     -0.204326   0.055704  -3.6681 0.0002444 ***
+## ScreenSize13     1.299412   0.061869  21.0026 &lt; 2.2e-16 ***
+## ScreenSize14     2.200346   0.064643  34.0383 &lt; 2.2e-16 ***
+## ScreenSize16     2.332517   0.064499  36.1634 &lt; 2.2e-16 ***
+## sd.Price1       -0.454341   0.059929  -7.5813 3.419e-14 ***
+## sd.Price1.5      0.682943   0.056733  12.0378 &lt; 2.2e-16 ***
+## sd.Price2        0.274326   0.062423   4.3946 1.110e-05 ***
+## sd.RAM8GB       -0.027677   0.067640  -0.4092 0.6824128    
+## sd.RAM16GB       0.572349   0.069340   8.2542 2.220e-16 ***
+## sd.RAM32GB       0.156947   0.069549   2.2567 0.0240299 *  
+## sd.Memory256GB   0.399257   0.066705   5.9854 2.159e-09 ***
+## sd.Memory512GB   0.388386   0.061825   6.2821 3.341e-10 ***
+## sd.Memory1T     -0.148452   0.070403  -2.1086 0.0349784 *  
+## sd.Processori5   0.706765   0.060649  11.6534 &lt; 2.2e-16 ***
+## sd.Processori7   0.305274   0.060683   5.0306 4.889e-07 ***
+## sd.Processori9   0.438029   0.070997   6.1697 6.841e-10 ***
+## sd.Weight1kg     0.605526   0.054176  11.1770 &lt; 2.2e-16 ***
+## sd.Weight1.2kg   0.434679   0.060418   7.1945 6.268e-13 ***
+## sd.Weight1.5kg   0.345268   0.066504   5.1917 2.084e-07 ***
+## sd.ScreenSize13 -0.144448   0.068821  -2.0989 0.0358250 *  
+## sd.ScreenSize14  0.844745   0.053835  15.6914 &lt; 2.2e-16 ***
+## sd.ScreenSize16  0.093014   0.058513   1.5896 0.1119162    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Log-Likelihood: -6404.9
+## 
+## random coefficients
+##              Min.    1st Qu.     Median       Mean     3rd Qu. Max.
+## Price1       -Inf -0.8196542 -0.5132055 -0.5132055 -0.20675690  Inf
+## Price1.5     -Inf -1.0966899 -0.6360522 -0.6360522 -0.17541445  Inf
+## Price2       -Inf -1.2871693 -1.1021390 -1.1021390 -0.91710874  Inf
+## RAM8GB       -Inf  1.0679522  1.0866197  1.0866197  1.10528728  Inf
+## RAM16GB      -Inf -1.2094721 -0.8234287 -0.8234287 -0.43738531  Inf
+## RAM32GB      -Inf -1.0277623 -0.9219033 -0.9219033 -0.81604444  Inf
+## Memory256GB  -Inf -1.5641748 -1.2948803 -1.2948803 -1.02558567  Inf
+## Memory512GB  -Inf -1.4780041 -1.2160421 -1.2160421 -0.95407999  Inf
+## Memory1T     -Inf  1.0978769  1.1980059  1.1980059  1.29813498  Inf
+## Processori5  -Inf -0.2793257  0.1973797  0.1973797  0.67408514  Inf
+## Processori7  -Inf -0.4292685 -0.2233641 -0.2233641 -0.01745963  Inf
+## Processori9  -Inf -1.6434746 -1.3480284 -1.3480284 -1.05258225  Inf
+## Weight1kg    -Inf  0.4405982  0.8490192  0.8490192  1.25744022  Inf
+## Weight1.2kg  -Inf  0.7876098  1.0807961  1.0807961  1.37398247  Inf
+## Weight1.5kg  -Inf -0.4372061 -0.2043261 -0.2043261  0.02855392  Inf
+## ScreenSize13 -Inf  1.2019834  1.2994124  1.2994124  1.39684141  Inf
+## ScreenSize14 -Inf  1.6305741  2.2003463  2.2003463  2.77011846  Inf
+## ScreenSize16 -Inf  2.2697799  2.3325170  2.3325170  2.39525412  Inf</code></pre>
+<pre class="r"><code># summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]&lt;=0.05, ]</code></pre>
 <p>In mixed MNL framework, we get a distribution of respondent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distribution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes.</p>
 <p>By analyzing the std. deviation, we get the level of variability in customer preference. Higher the est. std. deviation, higher the heterogeneity in the customer preference. The std. deviation can be interpreted by comparing it with our est. mean value. If the absolute std deviation is greater than the absolute mean, we can say we have relevant heterogeneity in consumer preference. Higher the difference between the absolute values, stronger the relevance of heterogeneity.</p>
 <p>In the second table, gives the summary of distribution. If the sign remains the same across all the quantiles, then it indicates that we have a substantial homogeneity in the preferences. Here, the parameters “Weight1.5kg” and “Processori5” has a different signs across the quantiles implying substantial heterogeneity. The other parameters are homogeneous across the quantiles indicating the customer preference in those attributes are homogeneous.</p>
@@ -741,114 +784,7 @@ plot(Weight1.5kg.distr)</code></pre>
 <p>It is reasonable to think that some variables can be correlated. In order to verify that, we are going to create a model that takes in consideration random effects (variation according to respondents) and that the random parameters are correlated. First we consider correlation among all pair of variables and analyze the signals of the random coefficients.</p>
 <pre class="r"><code>lm2.mixed2 &lt;- update(lm2.mixed, correlation = TRUE)
 # summary(lm2.mixed2)
-summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</code></pre>
-<pre><code>##                                  Estimate Std. Error    z-value     Pr(&gt;|z|)
-## Price1                         -0.5423328 0.05330925 -10.173334 0.000000e+00
-## Price1.5                       -0.6447801 0.05552343 -11.612757 0.000000e+00
-## Price2                         -1.1892830 0.05888731 -20.195913 0.000000e+00
-## RAM8GB                          1.1931557 0.05460591  21.850305 0.000000e+00
-## RAM16GB                        -0.9822937 0.06128734 -16.027677 0.000000e+00
-## RAM32GB                        -0.9804932 0.05962395 -16.444619 0.000000e+00
-## Memory256GB                    -1.4313114 0.06192802 -23.112501 0.000000e+00
-## Memory512GB                    -1.2697401 0.06091744 -20.843624 0.000000e+00
-## Memory1T                        1.3158232 0.05632211  23.362462 0.000000e+00
-## Processori5                     0.2987939 0.05365480   5.568819 2.564710e-08
-## Processori7                    -0.2162368 0.05527062  -3.912329 9.141030e-05
-## Processori9                    -1.5281261 0.06605947 -23.132582 0.000000e+00
-## Weight1kg                       0.9767661 0.05991144  16.303499 0.000000e+00
-## Weight1.2kg                     1.2190771 0.06082259  20.043162 0.000000e+00
-## Weight1.5kg                    -0.2495760 0.06229877  -4.006115 6.172571e-05
-## ScreenSize13                    1.5149022 0.07231889  20.947532 0.000000e+00
-## ScreenSize14                    2.4827351 0.07609799  32.625502 0.000000e+00
-## ScreenSize16                    2.6648005 0.07588602  35.115829 0.000000e+00
-## chol.Price1:Price1.5            0.5091874 0.06463289   7.878148 3.330669e-15
-## chol.Price1.5:Price1.5          0.5385149 0.05679775   9.481272 0.000000e+00
-## chol.RAM8GB:RAM8GB              0.1760036 0.06423695   2.739913 6.145554e-03
-## chol.Price1:RAM16GB             0.4136575 0.06852206   6.036851 1.571506e-09
-## chol.Price1.5:RAM16GB          -0.3927808 0.06682674  -5.877600 4.162583e-09
-## chol.RAM16GB:RAM16GB            0.1649397 0.06056280   2.723450 6.460404e-03
-## chol.Price1:RAM32GB            -0.1691713 0.06955890  -2.432059 1.501327e-02
-## chol.Price2:RAM32GB            -0.2168426 0.07065840  -3.068886 2.148585e-03
-## chol.RAM8GB:RAM32GB             0.2280366 0.07069291   3.225735 1.256497e-03
-## chol.Price1:Memory256GB        -0.2526951 0.06740452  -3.748933 1.775882e-04
-## chol.RAM8GB:Memory256GB        -0.2229825 0.06908064  -3.227858 1.247209e-03
-## chol.RAM16GB:Memory256GB        0.2909061 0.06779680   4.290853 1.779883e-05
-## chol.Price1.5:Memory512GB       0.2289193 0.06823676   3.354780 7.942805e-04
-## chol.RAM8GB:Memory512GB         0.3072588 0.07061256   4.351334 1.353118e-05
-## chol.RAM16GB:Memory512GB        0.3306583 0.06989956   4.730477 2.239929e-06
-## chol.RAM32GB:Memory512GB       -0.1450291 0.06687193  -2.168759 3.010095e-02
-## chol.Memory512GB:Memory512GB   -0.1307948 0.06165360  -2.121447 3.388424e-02
-## chol.Price1.5:Memory1T          0.1334677 0.06463829   2.064839 3.893819e-02
-## chol.RAM16GB:Memory1T          -0.1341235 0.06451265  -2.079027 3.761486e-02
-## chol.Memory512GB:Memory1T      -0.1959592 0.05860348  -3.343815 8.263478e-04
-## chol.Memory1T:Memory1T         -0.1805215 0.05400202  -3.342865 8.291826e-04
-## chol.Price2:Processori5         0.1600336 0.06357188   2.517365 1.182364e-02
-## chol.RAM8GB:Processori5         0.3986254 0.06180570   6.449654 1.121057e-10
-## chol.Memory256GB:Processori5   -0.2433733 0.06269999  -3.881553 1.037914e-04
-## chol.Memory512GB:Processori5    0.2231558 0.06199759   3.599427 3.189192e-04
-## chol.Processori5:Processori5   -0.2561944 0.06189507  -4.139174 3.485590e-05
-## chol.Price1.5:Processori7       0.1296622 0.06227010   2.082255 3.731921e-02
-## chol.RAM8GB:Processori7        -0.3901426 0.06402972  -6.093149 1.107112e-09
-## chol.RAM16GB:Processori7       -0.1548348 0.06201460  -2.496747 1.253384e-02
-## chol.Memory1T:Processori7      -0.2289323 0.06303496  -3.631831 2.814178e-04
-## chol.Processori7:Processori7    0.3390967 0.05599953   6.055349 1.401134e-09
-## chol.Price1.5:Processori9      -0.4402457 0.07091233  -6.208310 5.355745e-10
-## chol.Price2:Processori9        -0.1480709 0.07230358  -2.047906 4.056920e-02
-## chol.RAM16GB:Processori9       -0.4199952 0.07309591  -5.745811 9.148166e-09
-## chol.RAM32GB:Processori9        0.2206632 0.07233052   3.050762 2.282615e-03
-## chol.Memory256GB:Processori9    0.2548845 0.07322552   3.480816 4.998892e-04
-## chol.Processori5:Processori9   -0.5379238 0.07496595  -7.175575 7.200907e-13
-## chol.Processori7:Processori9    0.3109542 0.06741854   4.612295 3.982465e-06
-## chol.Price1.5:Weight1kg        -0.1503044 0.06952948  -2.161736 3.063856e-02
-## chol.Price2:Weight1kg          -0.2642258 0.07239840  -3.649608 2.626403e-04
-## chol.RAM8GB:Weight1kg           0.1502894 0.06980888   2.152870 3.132892e-02
-## chol.RAM16GB:Weight1kg         -0.1359569 0.06887059  -1.974093 4.837119e-02
-## chol.Memory512GB:Weight1kg     -0.3090941 0.06919128  -4.467241 7.923483e-06
-## chol.Memory1T:Weight1kg         0.3812202 0.07114659   5.358235 8.403873e-08
-## chol.Processori5:Weight1kg      0.2097977 0.07182438   2.920982 3.489302e-03
-## chol.Processori7:Weight1kg     -0.3177120 0.07286273  -4.360419 1.298139e-05
-## chol.Processori9:Weight1kg      0.4357785 0.07232591   6.025207 1.688937e-09
-## chol.RAM16GB:Weight1.2kg       -0.1467854 0.06661284  -2.203560 2.755532e-02
-## chol.Memory256GB:Weight1.2kg   -0.1628197 0.06756411  -2.409856 1.595883e-02
-## chol.Memory512GB:Weight1.2kg    0.3472787 0.06842540   5.075290 3.869049e-07
-## chol.Memory1T:Weight1.2kg      -0.3399952 0.07062348  -4.814196 1.477940e-06
-## chol.Processori9:Weight1.2kg    0.2230159 0.07018967   3.177332 1.486369e-03
-## chol.Weight1kg:Weight1.2kg     -0.4081055 0.07229742  -5.644814 1.653597e-08
-## chol.Price1:Weight1.5kg        -0.2091180 0.07348068  -2.845891 4.428741e-03
-## chol.Processori7:Weight1.5kg    0.2733307 0.07371013   3.708184 2.087507e-04
-## chol.Weight1.2kg:Weight1.5kg    0.4795704 0.06340235   7.563922 3.907985e-14
-## chol.Weight1.5kg:Weight1.5kg    0.1137358 0.05682562   2.001488 4.533979e-02
-## chol.Price1:ScreenSize13        0.1942086 0.07820679   2.483270 1.301824e-02
-## chol.Price2:ScreenSize13       -0.1723808 0.08164440  -2.111362 3.474125e-02
-## chol.RAM16GB:ScreenSize13      -0.1994055 0.07599346  -2.623983 8.690824e-03
-## chol.Memory512GB:ScreenSize13   0.1673804 0.08095639   2.067538 3.868347e-02
-## chol.Memory1T:ScreenSize13      0.3839389 0.07712472   4.978156 6.419306e-07
-## chol.Processori5:ScreenSize13  -0.1891179 0.08099759  -2.334858 1.955082e-02
-## chol.Weight1.2kg:ScreenSize13   0.2914398 0.07894664   3.691605 2.228438e-04
-## chol.Weight1.5kg:ScreenSize13  -0.2732500 0.08172445  -3.343552 8.271305e-04
-## chol.ScreenSize13:ScreenSize13 -0.2374817 0.08567489  -2.771894 5.573125e-03
-## chol.Price1.5:ScreenSize14      0.2055071 0.08001464   2.568368 1.021785e-02
-## chol.RAM8GB:ScreenSize14       -0.3165068 0.08045042  -3.934185 8.347957e-05
-## chol.RAM16GB:ScreenSize14      -0.4319782 0.07793459  -5.542831 2.976201e-08
-## chol.RAM32GB:ScreenSize14      -0.1600618 0.07913804  -2.022565 4.311803e-02
-## chol.Memory256GB:ScreenSize14  -0.1703012 0.08192825  -2.078663 3.764833e-02
-## chol.Memory512GB:ScreenSize14   0.1719393 0.07995825   2.150363 3.152651e-02
-## chol.Memory1T:ScreenSize14      0.6579583 0.07752943   8.486562 0.000000e+00
-## chol.Weight1kg:ScreenSize14    -0.4601880 0.07937003  -5.798007 6.710775e-09
-## chol.Weight1.2kg:ScreenSize14   0.5754879 0.08055385   7.144140 9.057199e-13
-## chol.Weight1.5kg:ScreenSize14   0.2582252 0.08195704   3.150739 1.628582e-03
-## chol.ScreenSize13:ScreenSize14 -0.2897984 0.08475411  -3.419284 6.278607e-04
-## chol.Price1.5:ScreenSize16      0.3169591 0.07821487   4.052416 5.069152e-05
-## chol.Price2:ScreenSize16       -0.3066157 0.07999484  -3.832944 1.266188e-04
-## chol.RAM16GB:ScreenSize16      -0.2558770 0.07420732  -3.448137 5.644679e-04
-## chol.Memory512GB:ScreenSize16   0.2581287 0.08019443   3.218786 1.287346e-03
-## chol.Memory1T:ScreenSize16      0.4037260 0.07509119   5.376475 7.595804e-08
-## chol.Processori5:ScreenSize16  -0.2250879 0.08063124  -2.791572 5.245274e-03
-## chol.Processori9:ScreenSize16   0.2106829 0.07897471   2.667726 7.636648e-03
-## chol.Weight1.2kg:ScreenSize16   0.3057231 0.07630342   4.006676 6.157918e-05
-## chol.Weight1.5kg:ScreenSize16  -0.2429888 0.08017850  -3.030598 2.440699e-03
-## chol.ScreenSize14:ScreenSize16 -0.2512496 0.05864958  -4.283910 1.836368e-05
-## chol.ScreenSize16:ScreenSize16  0.1772051 0.05691587   3.113456 1.849100e-03</code></pre>
+# summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</code></pre>
 <pre class="r"><code>cov2cor(cov.mlogit(lm2.mixed2))</code></pre>
 <pre><code>##                   Price1     Price1.5      Price2      RAM8GB      RAM16GB
 ## Price1        1.00000000 -0.687044183  0.33407312  0.10860838 -0.677357177
@@ -1154,6 +1090,7 @@ summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</cod
 </div>
 <div id="preference-share-prediction-mixed-mnl" class="section level2">
 <h2>Preference share prediction (Mixed MNL)</h2>
+<p>Since we are using a new model, we can try to recalculate the preference in order to analyse if there is any variance.</p>
 <pre><code>##    colMeans(shares) Price  RAM Memory Processor Weight ScreenSize
 ## 1       0.014966821     1  8GB  256GB        i5    1kg         13
 ## 2       0.001889181   0.7  4GB  126GB        i3  0.8kg         12
@@ -1165,7 +1102,7 @@ summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</cod
 ## 8       0.001899564     2 16GB  512GB        i7  1.2kg         16
 ## 9       0.002202304     2 32GB     1T        i9  1.5kg         14
 ## 10      0.070547102   0.7  4GB     1T        i9    1kg         16</code></pre>
-<p>options(scipen = 999)</p>
+<p>As can be noticed, there was hardly any changes. The attribute with major changes kept being the memory (1T)</p>
 <div id="trade-off-attributes-graph---mixed-mnl" class="section level3">
 <h3>Trade-off attributes graph - Mixed MNL</h3>
 <pre><code>##             level       share      increase
@@ -1198,7 +1135,7 @@ summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</cod
 </div>
 <div id="effects-of-individual-part-and-individual-level-predictors" class="section level3">
 <h3>Effects of individual part and individual-level predictors</h3>
-<p>In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen</p>
+<p>In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen.</p>
 <pre><code>##   id     Price1    Price1.5    Price2   RAM8GB    RAM16GB    RAM32GB
 ## 1  1 -0.3657811 -1.62490558 -1.093475 1.283102 -1.7421294 -0.7852214
 ## 2  2 -0.4553263 -0.59621066 -1.208543 1.075840 -1.7228910 -0.8415202
@@ -1224,8 +1161,7 @@ summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]&lt;=0.05, ]</cod
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>Main attribute: memory, biggest change was towards 1T. Memory is homogeneous, we can make the change safely.</p>
-<p>Analyse if is worth changing weight (towards 1.5) and processor ( towards i5)</p>
+<p>In summary, the finding of our analysis is that the attribute that represents the biggest change in preference was memory (1T) and the costumers are homogeneous regarding this preference. The attributes that presented features of heterogeneity are weight (1.5) and processor (i5). The model chosen as the best representing our data was “Random effects + all correlated” (lm2.mixed2). Finally, is necessary to analyse if would be possible to increase the memory of our desired product without compromising much the price in order to increase the preference share.</p>
 </div>
 </div>
 
