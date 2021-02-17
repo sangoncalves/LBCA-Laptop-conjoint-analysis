@@ -118,7 +118,7 @@ summary(lm1)
 
 The models output have several parameters and values similar to binomial logit model. The *Estimate* column provides the estimated average part worths for each level; they have to be interpreted with respect to the reference level of each attribute.
 
-In the summary of lm1 model, we can see that the model estimate coefficient of RAM8GB, RAM16GB and RAM32GB with respect to RAM4GB laptops measuring the preference. The laptops with 8GB RAM are more attracted to than RAM of 4GB(which is the reference level) whereas RAM of 32GB and 16GB has negative sign, which indicates that customers were  least attracted to those when compared to our reference level. Similarly, in terms of memory the coefficients are estimated with respect to Memory126GB. In this case, laptops with 1TB memory has higher preference compared to 126GB. When it comes to processors, i3 is taken as the reference value and from the est. coefficient, we can see that i5 is more preferred. The 12-inch and 0.7k is the reference point for screensize and price respectively. Among those attributes, we can see that 16 inch models are far more preferred with respect to 12 inch ones and for the price range, 0.7k itself is most preferred. The est. intercepts provide the preferences for the positions of the alternatives in each question. Here the values corresponding to those intercepts are very small implying that position of alternatives doesn't have much significance. 
+In the summary of lm1 model, we can see that the model estimate coefficient of RAM8GB, RAM16GB and RAM32GB with respect to RAM4GB laptops measuring the preference. The laptops with 8GB RAM are more preferred than RAM of 4GB(which is the reference level) whereas RAM of 32GB and 16GB has negative sign, which indicates that customers were  less attracted to those when compared to our reference level. Similarly, in terms of memory the coefficients are estimated with respect to Memory126GB. In this case, laptops with 1TB memory has higher preference compared to 126GB. When it comes to processors, i3 is taken as the reference value and from the est. coefficient, we can see that i5 is more preferred. The 12-inch and 0.7k is the reference point for screensize and price respectively. Among those attributes, we can see that 16 inch models are far more preferred with respect to 12 inch ones and for the price range, 0.7k itself is most preferred. The est. intercepts provide the preferences for the positions of the alternatives in each question. Here the values corresponding to those intercepts are very small implying that position of alternatives doesn't have much significance. 
 
 ### Multinomial Logit Model(MNL) Without Intercept
 In order to formally test the significance of the intercept, we fit another model without the intercept parameters and perform a likelihood ratio test comparing both models.
@@ -195,7 +195,6 @@ ProductSelection <- function(Price,RAM,Memory,Processor,Weight,ScreenSize){
 
 ### Profiles chosen 
 
-
 The profiles are chosen based on 3 market levels: entry, mid-range and high performance.
 
 ```{r setting profiles, include=FALSE}
@@ -242,16 +241,13 @@ predict.mnl <- function(model, data) {
 predict.mnl(lm2, profiles)
 ```
 
-#update the numbers of the table below.
-
-The table provides the computed preference share for each alternative profiles. Among the selected profiles, we can see that customer may choose the second profile 38.9% of times. Our planned product is the 5th profile which has 8% shares.  These preference shares are made relative to a specific given set of potential competitors and it may change for different set of profiles. Using the est. models we can assess how the updation in the attributes our planned product would affect the preference shares. 
+The table provides the computed preference share for each alternative profiles. Among the selected profiles, we can see that customer may choose the 5th profile 58.9% of times. Our planned product is the 1st profile which has 1% shares.  These preference shares are made relative to a specific given set of potential competitors and it may change for different set of profiles. Using the estimated model we can assess how the updation in the attributes our planned product would affect the preference shares. 
 
 We can further study the impact of variations in the level of attributes by creating a preference share-sensitivity chart. This provides useful indications to the people that have made the design as they get a clear intuitive picture of how changes in the design influence the preference share.
 
 ```{r}
 source("BootCI.predict.mnl.R")
 ```
-
 
 This function is to obtain the Bootstrap Confidence Intervals, it will re-estimate the models and calculate the preference share several times. Here we estimate the model for random samples and obtain the values estimated corresponding to each parameters. From this we will obtain the bootstrap distribution from which we can get the CI. The function takes model(which should be used to compute preference share), chosen set of profiles. Among these chosen profiles, the first one will be our profile, which is to be assessed while comparing with other products that dominates the market. In short, we are trying to find the preference share of our profile in comparison with other product profiles. By default the function as 500 simulations with 95% CI. So this function will return the preference shares along with the bootstrap CI corresponding to each profiles. 
 
@@ -299,8 +295,7 @@ barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
 grid(nx=NA, ny=NULL)
 ```
 
-
- The graph above is the sensitivity chart for laptop design with 8GB RAM, 256GB  memory, i5 processor, 13 inch screen size at 1K price range which weigh about 1kg. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares. 
+The graph above is the sensitivity chart with price - 1k, RAM - 8GB, memory - 256GB, processor -	i5, weight - 1kg, screensize -	13" as reference profile configuration. We can see that, increasing the memory from 256GB to 1TB would also increase the preference shares by 11% and increasing the screensize to 16" can also increase the preference share by 2.58%. Any change in RAM size, processor or weight will have a negative effect on the preference shares. 
 
 ## Are users homogeneous?
 
@@ -322,8 +317,8 @@ In order to verify that, we are going to create a model that takes in considerat
 lm2.mixed <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize  | -1, 
                    data = laptops.mlogit, 
                    panel=TRUE, rpar = lm2.rpar, correlation = FALSE)
-# summary(lm2.mixed)
-summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]<=0.05, ]
+summary(lm2.mixed)
+# summary(lm2.mixed)$CoefTable[summary(lm2.mixed)$CoefTable[,4]<=0.05, ]
 ```
 
 In mixed MNL framework, we get a distribution of respondent level values of a parameter for which we can compute the mean and the variance. So we compute 2 parameters to each attributes: we compute the mean and variance corresponding to each distribution respondent variables. In summary, we can see the estimate of mean and std. deviation corresponding to the distribution of each attributes. 
@@ -335,7 +330,6 @@ In the second table, gives the summary of distribution. If the sign remains the 
 ### Analysing heterogeneity
 
 By comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity in the customer preferences.
-
 
 ```{r Heterogeneity processor and weight, echo=FALSE}
 #comparing the sign of the quantiles we can identify that Processori5 and Weight1.5kg have different signs, which could imply heterogeneity
@@ -363,10 +357,13 @@ plot(Weight1.5kg.distr)
 
 It is reasonable to think that some variables can be correlated. In order to verify that, we are going to create a model that takes in consideration random effects (variation according to respondents) and that the random parameters are correlated.
 First we consider correlation among all pair of variables and analyze the signals of the random coefficients.
-```{r Checking correlation}
+```{r Checking correlation, echo=TRUE}
 lm2.mixed2 <- update(lm2.mixed, correlation = TRUE)
-summary(lm2.mixed2)
+# summary(lm2.mixed2)
+# summary(lm2.mixed2)$CoefTable[summary(lm2.mixed2)$CoefTable[,4]<=0.05, ]
+```
 
+```{r}
 cov2cor(cov.mlogit(lm2.mixed2))
 summary(vcov(lm2.mixed2, what = "rpar", type = "cor"))
 ```
@@ -405,6 +402,9 @@ The lm2.mixed2 is the multinomial model with all correlated random effects where
 We obtain a low p-value from the LR test which implies assessing consumer preferences using the model with all correlated random effects (larger model) is a better fit. So among all the models we have seen so far, lm2.mixed2 is the best model for assessing the consumer preferences.
 
 ## Preference share prediction (Mixed MNL)
+
+Since we are using a new model, we can try to recalculate the preference in order to analyse if there is any variance.
+
 ```{r Predict Function Correlated Random Effect, include=FALSE}
 predict.mixed.mnl <- function(model, data, nresp=1000) {
   # Function for predicting shares from a mixed MNL model 
@@ -430,6 +430,9 @@ predict.mixed.mnl <- function(model, data, nresp=1000) {
 set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
+
+As can be noticed, there was hardly any changes. The attribute with major changes kept being the memory (1T)
+
 ```{r Sensitivity Function2, include=FALSE}
 sensitivity.mnl.mixed <- function(model, attrib, base.data, competitor.data) {
   # Function for creating data for a preference share-sensitivity chart
@@ -454,10 +457,11 @@ base.data <- profiles[1,]
 competitor.data <- profiles[-1,]
 ```
 
-options(scipen = 999)
 
-### Trade-off attributes graph - MNL
+
+### Trade-off attributes graph - Mixed MNL
 ```{r Trade-off attributes Mixed model graph - MNL, echo=FALSE}
+options(scipen = 999)
 tradeoff.mixed <- sensitivity.mnl.mixed(lm2.mixed2, attributes, base.data, competitor.data)
 print(tradeoff.mixed)
 barplot(tradeoff.mixed$increase, horiz=FALSE, names.arg=tradeoff.mixed$level,
@@ -466,9 +470,11 @@ barplot(tradeoff.mixed$increase, horiz=FALSE, names.arg=tradeoff.mixed$level,
 grid(nx=NA, ny=NULL)
 ```
 
+The graph above is the sensitivity chart with price - 1k, RAM - 8GB, memory - 256GB, processor -	i5, weight - 1kg, screensize -	13" as reference profile configuration. We can see that, increasing the memory from 256GB to 1TB would also increase the preference shares by 14% and increasing the screensize to 16" can also increase the preference share by 3%. Any change in RAM size, processor or weight will have a negative effect on the preference shares. 
 
 ### Effects of individual part and individual-level predictors
-In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen
+In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen.
+
 ```{r individual part, echo=FALSE}
 PW.ind <- fitted(lm2.mixed2, type = "parameters")
 head(PW.ind)
@@ -476,7 +482,4 @@ head(PW.ind)
 
 ## Conclusion
 
-Main attribute: memory, biggest change was towards 1T. 
-Memory is homogeneous, we can make the change safely. 
-
-Analyse if is worth changing weight (towards 1.5) and processor ( towards i5)
+In summary, the finding of our analysis is that the attribute that represents the biggest change in preference was memory (1T) and the costumers are homogeneous regarding this preference. The attributes that presented features of heterogeneity are weight (1.5) and processor (i5). The model chosen as the best representing our data was "Random effects + all correlated" (lm2.mixed2). Finally, is necessary to analyse if would be possible to increase the memory of our desired product without compromising much the price in order to increase the preference share.
