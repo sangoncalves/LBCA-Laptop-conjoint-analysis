@@ -299,6 +299,7 @@ barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
 grid(nx=NA, ny=NULL)
 ```
 
+
  The graph above is the sensitivity chart for laptop design with 8GB RAM, 256GB  memory, i5 processor, 13 inch screen size at 1K price range which weigh about 1kg. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares. 
 
 ## Are users homogeneous?
@@ -401,7 +402,7 @@ lrtest(lm2.mixed2,lm2.mixed3) #partially correlated random effects vs. all corre
 
 The lm2.mixed2 is the multinomial model with all correlated random effects whereas lm2.mixed3 is a restricted model with some of the correlated random effects. This test is to determine whether the restricted model is better fit than the model with larger model. 
 
-We obtain a low p-value from the LR test which implies assessing consumer preferences using the model with all correlated random effects (larger model) is a better fit. So among all the models we have seen so far, lm2.mixed2 is the best model for assessing the condumer preferences.
+We obtain a low p-value from the LR test which implies assessing consumer preferences using the model with all correlated random effects (larger model) is a better fit. So among all the models we have seen so far, lm2.mixed2 is the best model for assessing the consumer preferences.
 
 ## Preference share prediction (Mixed MNL)
 ```{r Predict Function Correlated Random Effect, include=FALSE}
@@ -429,6 +430,41 @@ predict.mixed.mnl <- function(model, data, nresp=1000) {
 set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
+```{r Sensitivity Function2, include=FALSE}
+sensitivity.mnl.mixed <- function(model, attrib, base.data, competitor.data) {
+  # Function for creating data for a preference share-sensitivity chart
+  # model: mlogit object returned by mlogit() function
+  # attrib: list of vectors with attribute levels to be used in sensitivity
+  # base.data: data frame containing baseline design of target product
+  # competitor.data: data frame contining design of competitive set
+  data <- rbind(base.data, competitor.data)
+  base.share <- predict.mixed.mnl(model, data)[1,1]
+  share <- NULL
+  for (a in seq_along(attrib)) {
+    for (i in attrib[[a]]) {
+      data[1,] <- base.data
+      data[1,a] <- i
+      share <- c(share, predict.mixed.mnl(model, data)[1,1])
+    }
+  }
+  data.frame(level=unlist(attrib), share=share, increase=share-base.share)
+}
+
+base.data <- profiles[1,]
+competitor.data <- profiles[-1,]
+```
+
+options(scipen = 999)
+
+### Trade-off attributes graph - MNL
+```{r Trade-off attributes Mixed model graph - MNL, echo=FALSE}
+tradeoff.mixed <- sensitivity.mnl.mixed(lm2.mixed2, attributes, base.data, competitor.data)
+print(tradeoff.mixed)
+barplot(tradeoff.mixed$increase, horiz=FALSE, names.arg=tradeoff.mixed$level,
+        ylab="Change in Share for the Planned Product Design", 
+        ylim=c(-0.1,0.4))
+grid(nx=NA, ny=NULL)
+```
 
 
 ### Effects of individual part and individual-level predictors
@@ -440,4 +476,7 @@ head(PW.ind)
 
 ## Conclusion
 
+Main attribute: memory, biggest change was towards 1T. 
+Memory is homogeneous, we can make the change safely. 
 
+Analyse if is worth changing weight (towards 1.5) and processor ( towards i5)
