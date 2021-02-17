@@ -72,7 +72,13 @@ In this part, we check whether the attributes are well balanced.
 
 ```{r check balance, echo=FALSE}
 # To check balance, he used this function
-sapply(laptops, table)
+bal <- sapply(laptops, table)
+print(bal$Price)
+print(bal$RAM)
+print(bal$Memory)
+print(bal$Processor)
+print(bal$Weight)
+print(bal$ScreenSize)
 ```
 
 Here, the attributes are properly balanced, which means that the frequencies across each levels of the attributes are equally distributed. There is no over/under representation in level of attributes.  
@@ -89,13 +95,13 @@ xtabs(choice ~ ScreenSize, data=laptops)
 
 
 From the joint distribution obtained, we can see that the customers highly prefer laptops with bigger screensize, high memory, a decent RAM of 8GB and i5 processor and are looking for products mostly at price range of 0.7K to 1K.
-Very few are opting for laptops with 12" screen or are interested in spending 2K on a laptop.
+It is also in interesting to see that laptops with 126GB memory is the second popular on after 1TB. Very few are opting for laptops with 12" screen or are interested in spending 2K on a laptop. 
 
 ## Models to fit our data
 
 ### Multinomial Logit Model(MNL)
 
-From the dataset, we can gather that the respondent had 4 alternatives to make his/her final choice; implying that the dependent variable is a qualitative multinomial variable with 4 levels. Multinomial Logit model is an appropriate one to fit this kind of data. MNL gives the measurement of association between each attributes and respondent choice.
+From the dataset, we can gather that the respondent had 4 alternatives to make his/her final choice; implying that the dependent variable is a qualitative multinomial variable with 4 levels. Multinomial Logit model (MNL) is an appropriate one to fit this kind of data. MNL gives the measurement of association between each attributes and respondent choice.
 
 We use mlogit() function to fit the MNL model. However, the function requires us to organize the data in a special format by using dfidx(). 
 
@@ -110,7 +116,9 @@ lm1 <- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize , 
 summary(lm1)
 ```
 
-In the summary of lm1 model, we can see that the model estimate coefficient of RAM8GB, RAM16GB and RAM32GB with respect to RAM4GB laptops measuring the preference. The laptops with 8GB RAM are more attracted to than RAM of 16GB whereas RAM of 32GB is the least attracted one. Similarly, in terms of memory the coefficients are estimated with respect to Memory126GB. In this case, laptops with 1TB memory has higher preference compared to 126GB When it comes to processors, i3 is taken as the reference value and from the est. coefficient, we can see that i5 is more preferred. The 12-inch and 0.7k is the reference point for screensize and price respectively. Among those attributes, we can see that 16 inch models are far more preferred with respect to 12 inch ones and for the price range, 0.7k itself is most preferred. The est. intercepts provide the preferences for the positions of the alternatives in each question. Here the values corresponding to those intercepts are very small implying that position of alternatives doesn't have much significance. 
+The models output have several parameters and values similar to binomial logit model. The *Estimate* column provides the estimated average part worths for each level; they have to be interpreted with respect to the reference level of each attribute.
+
+In the summary of lm1 model, we can see that the model estimate coefficient of RAM8GB, RAM16GB and RAM32GB with respect to RAM4GB laptops measuring the preference. The laptops with 8GB RAM are more attracted to than RAM of 4GB(which is the reference level) whereas RAM of 32GB and 16GB has negative sign, which indicates that customers were  least attracted to those when compared to our reference level. Similarly, in terms of memory the coefficients are estimated with respect to Memory126GB. In this case, laptops with 1TB memory has higher preference compared to 126GB. When it comes to processors, i3 is taken as the reference value and from the est. coefficient, we can see that i5 is more preferred. The 12-inch and 0.7k is the reference point for screensize and price respectively. Among those attributes, we can see that 16 inch models are far more preferred with respect to 12 inch ones and for the price range, 0.7k itself is most preferred. The est. intercepts provide the preferences for the positions of the alternatives in each question. Here the values corresponding to those intercepts are very small implying that position of alternatives doesn't have much significance. 
 
 ### Multinomial Logit Model(MNL) Without Intercept
 In order to formally test the significance of the intercept, we fit another model without the intercept parameters and perform a likelihood ratio test comparing both models.
@@ -245,7 +253,7 @@ predict.mnl <- function(model, data) {
 predict.mnl(lm2, profiles)
 ```
 
-#update the numbers of the table bellow.
+#update the numbers of the table below.
 
 The table provides the computed preference share for each alternative profiles. Among the selected profiles, we can see that customer may choose the second profile 38.9% of times. Our planned product is the 5th profile which has 8% shares.  These preference shares are made relative to a specific given set of potential competitors and it may change for different set of profiles. Using the est. models we can assess how the updation in the attributes our planned product would affect the preference shares. 
 
@@ -263,7 +271,7 @@ We can further study the impact of variations in the level of attributes by crea
 # nsim: number of bootstrap samples, default is 500
 # conflevel: desired confidence level, default is 0.95
 # library "parallel" is necessary
-
+library(parallel)
 BootCI.predict.mnl <- function(model, data, nsim=500, conflevel=0.95) {
 dataModel <- model$model
 dataModel$probabilities <- NULL
@@ -304,11 +312,15 @@ names(predictedShares)[1] <- "share"
 predictedShares
 }
 ```
+
+This funtion is to obtain the Bootstrap Confidence Intervals, it will re-estimate the models and calculate the preference share several times. Here we estimate the model for random samples and obtain the values estimated corresponding to each parameters. From this we will obtain the bootstrap distribution from which we can get the CI. The function takes model(which should be used to compute preference share), chosen set of profiles. Among these chosen profiles, the first one will be our profile, which is to be assessed while comparing with other products that dominates the market. In short, we are trying to find the preference share of our profile in comparison with other product profiles. By default the function as 500 simulations with 95% CI. So this function will return the preference shares along with the bootstrap CI corresponding to each profiles. 
+
 ### Preference share with bootstrap - Fixed model
 ```{r predict bootstrap - Fixed model, echo=FALSE}
 BootCI.predict.mnl(lm2,profiles)
 ```
 
+Preference share is a parameter that help us to understand which profiles are appreciated more by the customers. It can also be used to analyze the importance of attributes. We perform sensitivity analysis to study the attributes; how preference share is affected by the variations in the attributes. 
 
 ```{r Sensitivity Function, include=FALSE}
 sensitivity.mnl <- function(model, attrib, base.data, competitor.data) {
@@ -335,6 +347,8 @@ competitor.data <- profiles[-5,]
 tradeoff <- sensitivity.mnl(lm2, attributes, base.data, competitor.data)
 ```
 
+The preference shares are in logit scale it difficult to interpret it. Thus we use sensitivity analysis by stuying how preference share changes as each level of each attributes are changed one after the other. This function intakes the model, attributes, reference profile: one which is used to study the sensitivity of attributes and competitive set of profiles as the input. 
+
 ### Trade-off attributes graph - MNL
 ```{r Trade-off attributes graph - MNL, echo=FALSE}
 tradeoff <- sensitivity.mnl(lm2, attributes, base.data, competitor.data)
@@ -345,7 +359,7 @@ barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,
 grid(nx=NA, ny=NULL)
 ```
 
-The graph above shows the sensitivity chart for laoptop design with 16GB RAM, 512GB  memory, i7 processor, 16 inch screen size at 2K price range. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares.
+<!-- The graph above shows the sensitivity chart for laptop design with 16GB RAM, 512GB  memory, i7 processor, 16 inch screen size at 2K price range. We can see that, reducing the RAM to 8GB would increase the share by almost 0.23 and increasing the memory from 512GB to 1TB would also increase the preference shares by 0.33. Any change in screen size or weight will have a negative effect on the preference shares. -->
 
 
 ## Are users homogeneous?
