@@ -1,0 +1,3 @@
+"0","barplot(tradeoff$increase, horiz=FALSE, names.arg=tradeoff$level,"
+"0","        ylab=""Change in Share for the Planned Product Design"", "
+"0","        ylim=c(-0.1,0.4))"

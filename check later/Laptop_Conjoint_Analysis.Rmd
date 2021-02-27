@@ -1,0 +1,75 @@
+---
+title: "Laboratory of Consumer and Business Analytics"
+subtitle: "Conjoint analysis - Laptop Dataset"
+author: "Nisha Antony, Sander Martins"
+date: "27/01/2021"
+output: html_document
+---
+
+```{r Loading Dataset, include=FALSE}
+laptops = read.csv("Dataset/laptops.csv", sep=";")
+
+```
+
+```{r Loading Libraries, include=FALSE}
+library(mlogit)
+library(dplyr)
+library(ggplot2)
+library(MASS)
+library(lattice)
+```
+
+---
+#Project Description
+
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis.
+
+#Summary of all the analysis to be presented
+##Dataset description
+## Is our dataset balanced?
+## Models to fit our data
+## Correlated models
+## Choosing models
+## Preference share of the users
+## Are our users homogeneous?
+## Product profiles
+## Conclusion
+
+
+##Dataset description
+Our dataset represents the generated answers of questionnaires regarding the choice of laptops.
+
+add code here about:
+summarizing the data - levels and attributes
+Quantity of each attributes
+```{r Data description, echo=FALSE}
+summary(laptops)
+```
+
+
+
+## Is our dataset balanced?
+
+```{r echo=FALSE}
+
+xtabs(choice ~ Price, data=laptops)
+xtabs(choice ~ RAM, data=laptops)
+xtabs(choice ~ Memory, data=laptops)
+xtabs(choice ~ Processor, data=laptops)
+xtabs(choice ~ Weight, data=laptops)
+xtabs(choice ~ ScreenSize, data=laptops)
+```
+
+## Models to fit our data
+
+## Correlated models
+
+## Choosing models
+
+## Preference share of the users
+
+## Are our users homogeneous?
+
+## Product profiles
+
+## Conclusion

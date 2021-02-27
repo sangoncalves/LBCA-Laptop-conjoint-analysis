@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Laboratory of Consumer and Business Analytics</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Nisha Antony" />
+    <meta name="author" content="Sander Martins" />
+    <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Laboratory of Consumer and Business Analytics
+## Conjoint analysis - Laptop Dataset
+### Nisha Antony
+### Sander Martins
+### 27/01/2021
+
+---
+
+
+
+
+
+
+
+# Agenda
+* Project Description &lt;br/&gt;
+* Summary of all the analysis to be presented &lt;br/&gt;
+* Dataset description &lt;br/&gt;
+* Is our dataset balanced?&lt;br/&gt;
+* Models to fit our data&lt;br/&gt;
+* Correlated models&lt;br/&gt;
+* Choosing models&lt;br/&gt;
+* Preference share of the users&lt;br/&gt;
+* Are our users homogeneous?&lt;br/&gt;
+* Product profiles&lt;br/&gt;
+* Conclusion
+---
+
+## Project Description
+
+The objective of this project is to have an understanding of conjoint analysis and demonstrate some of the conclusion that we be can found using this analysis.
+---
+## Dataset description
+Our dataset represents the generated answers to questionnaires regarding the choice of laptops.
+
+add code here about:
+summarizing the data - levels and attributes
+Quantity of each attributes
+
+```
+##     resp.id            ques      alt      Price        RAM         Memory    
+##  Min.   :  1.00   Min.   :   1   1:7500   0.7:7516   4GB :7582   126GB:7432  
+##  1st Qu.: 75.75   1st Qu.:1876   2:7500   1  :7411   8GB :7319   256GB:7596  
+##  Median :150.50   Median :3750   3:7500   1.5:7545   16GB:7609   512GB:7524  
+##  Mean   :150.50   Mean   :3750   4:7500   2  :7528   32GB:7490   1T   :7448  
+##  3rd Qu.:225.25   3rd Qu.:5625                                               
+##  Max.   :300.00   Max.   :7500                                               
+##  Processor   Weight     ScreenSize     choice    
+##  i3:7491   0.8kg:7464   12:7584    Min.   :0.00  
+##  i5:7580   1kg  :7372   13:7487    1st Qu.:0.00  
+##  i7:7352   1.2kg:7584   14:7509    Median :0.00  
+##  i9:7577   1.5kg:7580   16:7420    Mean   :0.25  
+##                                    3rd Qu.:0.25  
+##                                    Max.   :1.00
+```
+
+---
+## Is our dataset balanced?
+
+
+```
+## Price
+##  0.7    1  1.5    2 
+## 2338 1895 1773 1494
+```
+
+```
+## RAM
+##  4GB  8GB 16GB 32GB 
+## 1988 2865 1347 1300
+```
+
+```
+## Memory
+## 126GB 256GB 512GB    1T 
+##  2043  1127  1153  3177
+```
+
+```
+## Processor
+##   i3   i5   i7   i9 
+## 2121 2329 1861 1189
+```
+
+```
+## Weight
+## 0.8kg   1kg 1.2kg 1.5kg 
+##  1490  2203  2424  1383
+```
+
+```
+## ScreenSize
+##   12   13   14   16 
+##  838 1644 2496 2522
+```
+---
+## Models to fit our data
+
+```r
+laptops.mlogit &lt;- dfidx(laptops, idx = list(c("ques", "resp.id"), "alt"), drop.index=F,levels=c(1,2,3,4))
+```
+
+
+```r
+lm1 &lt;- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize, data = laptops.mlogit)
+summary(lm1)
+```
+
+```
+## 
+## Call:
+## mlogit(formula = choice ~ Price + RAM + Memory + Processor + 
+##     Weight + ScreenSize, data = laptops.mlogit, method = "nr")
+## 
+## Frequencies of alternatives:choice
+##       1       2       3       4 
+## 0.24573 0.25267 0.25227 0.24933 
+## 
+## nr method
+## 6 iterations, 0h:0m:2s 
+## g'(-H)^-1g = 2.15E-06 
+## successive function values within tolerance limits 
+## 
+## Coefficients :
+##                Estimate Std. Error  z-value  Pr(&gt;|z|)    
+## (Intercept):2  0.045634   0.040334   1.1314 0.2578870    
+## (Intercept):3  0.058009   0.040377   1.4367 0.1508084    
+## (Intercept):4  0.032013   0.040412   0.7922 0.4282674    
+## Price1        -0.446694   0.045273  -9.8667 &lt; 2.2e-16 ***
+## Price1.5      -0.571078   0.045618 -12.5186 &lt; 2.2e-16 ***
+## Price2        -0.953224   0.047344 -20.1338 &lt; 2.2e-16 ***
+## RAM8GB         0.924216   0.044407  20.8124 &lt; 2.2e-16 ***
+## RAM16GB       -0.690506   0.047911 -14.4122 &lt; 2.2e-16 ***
+## RAM32GB       -0.813077   0.048592 -16.7326 &lt; 2.2e-16 ***
+## Memory256GB   -1.088881   0.049437 -22.0258 &lt; 2.2e-16 ***
+## Memory512GB   -1.003092   0.048926 -20.5021 &lt; 2.2e-16 ***
+## Memory1T       1.027503   0.043944  23.3822 &lt; 2.2e-16 ***
+## Processori5    0.190759   0.043949   4.3405 1.421e-05 ***
+## Processori7   -0.185945   0.045471  -4.0893 4.327e-05 ***
+## Processori9   -1.113779   0.050210 -22.1825 &lt; 2.2e-16 ***
+## Weight1kg      0.767455   0.047487  16.1615 &lt; 2.2e-16 ***
+## Weight1.2kg    0.942015   0.047594  19.7926 &lt; 2.2e-16 ***
+## Weight1.5kg   -0.175095   0.050035  -3.4994 0.0004663 ***
+## ScreenSize13   1.124687   0.054422  20.6660 &lt; 2.2e-16 ***
+## ScreenSize14   1.932395   0.054466  35.4788 &lt; 2.2e-16 ***
+## ScreenSize16   2.007688   0.054852  36.6019 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Log-Likelihood: -6750.6
+## McFadden R^2:  0.3507 
+## Likelihood ratio test : chisq = 7292.3 (p.value = &lt; 2.22e-16)
+```
+
+```r
+lm2 &lt;- mlogit(choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | -1, data = laptops.mlogit)
+summary(lm2)
+```
+
+```
+## 
+## Call:
+## mlogit(formula = choice ~ Price + RAM + Memory + Processor + 
+##     Weight + ScreenSize | -1, data = laptops.mlogit, method = "nr")
+## 
+## Frequencies of alternatives:choice
+##       1       2       3       4 
+## 0.24573 0.25267 0.25227 0.24933 
+## 
+## nr method
+## 6 iterations, 0h:0m:2s 
+## g'(-H)^-1g = 2.11E-06 
+## successive function values within tolerance limits 
+## 
+## Coefficients :
+##               Estimate Std. Error  z-value  Pr(&gt;|z|)    
+## Price1       -0.446283   0.045266  -9.8591 &lt; 2.2e-16 ***
+## Price1.5     -0.571655   0.045612 -12.5331 &lt; 2.2e-16 ***
+## Price2       -0.953178   0.047342 -20.1337 &lt; 2.2e-16 ***
+## RAM8GB        0.923871   0.044399  20.8084 &lt; 2.2e-16 ***
+## RAM16GB      -0.689757   0.047904 -14.3989 &lt; 2.2e-16 ***
+## RAM32GB      -0.812848   0.048587 -16.7296 &lt; 2.2e-16 ***
+## Memory256GB  -1.088117   0.049424 -22.0160 &lt; 2.2e-16 ***
+## Memory512GB  -1.002787   0.048897 -20.5082 &lt; 2.2e-16 ***
+## Memory1T      1.027356   0.043936  23.3829 &lt; 2.2e-16 ***
+## Processori5   0.190622   0.043945   4.3377 1.440e-05 ***
+## Processori7  -0.185582   0.045461  -4.0822 4.461e-05 ***
+## Processori9  -1.113668   0.050205 -22.1823 &lt; 2.2e-16 ***
+## Weight1kg     0.767671   0.047483  16.1673 &lt; 2.2e-16 ***
+## Weight1.2kg   0.942085   0.047585  19.7978 &lt; 2.2e-16 ***
+## Weight1.5kg  -0.174588   0.050011  -3.4910 0.0004813 ***
+## ScreenSize13  1.123946   0.054412  20.6561 &lt; 2.2e-16 ***
+## ScreenSize14  1.931256   0.054448  35.4697 &lt; 2.2e-16 ***
+## ScreenSize16  2.006770   0.054839  36.5938 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Log-Likelihood: -6751.7
+```
+
+
+```
+## [1] "Testing if the models are siginificantly equivalent"
+```
+
+```
+## Likelihood ratio test
+## 
+## Model 1: choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize | 
+##     -1
+## Model 2: choice ~ Price + RAM + Memory + Processor + Weight + ScreenSize
+##   #Df  LogLik Df Chisq Pr(&gt;Chisq)
+## 1  18 -6751.7                    
+## 2  21 -6750.6  3 2.296     0.5133
+```
+
+
+## Correlated models
+
+## Choosing models
+
+## Preference share of the users
+
+## Are our users homogeneous?
+
+## Product profiles
+
+## Conclusion
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

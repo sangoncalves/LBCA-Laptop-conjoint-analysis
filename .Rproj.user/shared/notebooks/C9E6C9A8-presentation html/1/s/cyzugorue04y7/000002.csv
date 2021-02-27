@@ -1,0 +1,1 @@
+"0","laptops.mlogit <- dfidx(laptops, idx = list(c(""ques"", ""resp.id""), ""alt""), drop.index=F, levels=c(1,2,3,4))"

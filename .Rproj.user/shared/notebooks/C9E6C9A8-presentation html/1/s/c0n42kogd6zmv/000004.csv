@@ -1,0 +1,4 @@
+"0","# We can get a visual summary of the distribution of random effects and hence of the level of heterogeneity"
+"0","#layout(matrix(c(3,3,2,3), 2, 2, byrow = TRUE))"
+"0","#par(mfrow=c(2,2))"
+"0","plot(lm2.mixed)"
