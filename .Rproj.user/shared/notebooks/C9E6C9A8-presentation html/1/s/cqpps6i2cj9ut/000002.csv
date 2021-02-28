@@ -1,7 +1,0 @@
-"0","laptops$Price       <- as.factor(laptops$Price)"
-"0","laptops$RAM         <- factor(laptops$RAM, levels=c( ""4GB"", ""8GB"", ""16GB"", ""32GB"" ))"
-"0","laptops$Memory      <- factor(laptops$Memory, levels=c( ""126GB"", ""256GB"", ""512GB"", ""1T"" ))"
-"0","laptops$Processor   <- factor(laptops$Processor, levels=c( ""i3"", ""i5"", ""i7"", ""i9"" ))"
-"0","laptops$Weight      <- factor(laptops$Weight, levels=c( ""0.8kg"", ""1kg"", ""1.2kg"", ""1.5kg"" ))"
-"0","laptops$ScreenSize  <- as.factor(laptops$ScreenSize) "
-"0","laptops$alt         <- factor(laptops$alt, levels=c(""1"", ""2"", ""3"", ""4""))"

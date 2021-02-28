@@ -1,7 +1,0 @@
-"0","## Plot"
-"0","g <- ggplot(df, aes(Profiles, Freq))"
-"0","g + geom_bar(stat=""identity"", width = 0.5, fill=""tomato2"") + "
-"0","  labs(title=""Profiles counting"", "
-"0","       caption=""Frequency of profiles"") +"
-"0","  theme(axis.text.x = element_text(angle=65, vjust=0.6))"
-"0",""
