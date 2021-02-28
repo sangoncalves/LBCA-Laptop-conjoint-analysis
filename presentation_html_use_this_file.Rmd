@@ -40,19 +40,14 @@ laptops$alt         <- factor(laptops$alt, levels=c("1", "2", "3", "4"))
 ```
 # Agenda
 * Project Description <br/>
-* Summary of all the analysis to be presented <br/>
 * Dataset description <br/>
 * Dataset balanced and Association of attributes<br/>
 * Models to fit our data<br/>
-* Choosing models part 1<br/>
+* Preference share prediction (MNL)<br/>
 * Are our users homogeneous?<br/>
-* Correlated models<br/>
-* Choosing models part 2<br/>
-* Preference share of the users<br/>
-* Product profiles<br/>
+* Preference share prediction (Mixed MNL)<br/>
+* Proposed Product profile<br/>
 * Conclusion<br/>
-
-
 
 ## Project Description
 
@@ -135,9 +130,8 @@ lrtest(lm1, lm2)
 ```
 Here we compare the MNL model with and without estimated intercepts. The comparison between the lm1 and the lm2 with no intercepts leads to a p-value of 0.5133. Since we have a high p-value (in comparison with significance level 0.05), we can conclude that the two models are not significantly different in terms of goodness of fit. This indicates that the alternative specific constants are not necessary to adequately model the data.
 
-## Profiles and preference share
-### Popular profiles (top 15)
-
+### Profiles and preference share
+Popular profiles (top 15):
 From the survey dataset, we now try to extract the most popular laptop models using a frequency table.
 
 ```{r Frequency table, include=FALSE}
@@ -431,7 +425,7 @@ set.seed(1234)
 predict.mixed.mnl(lm2.mixed2, data=profiles)
 ```
 
-#Computing the preference share of the New Product profile
+## Proposed Product profile
 
 Here we are estimating the preference share of product profile with some proposed changes that can 
 increase its acceptance rate. So our new reference profile will have an updation in the price and memory attributes, from 1K to 1.5K and 256GB to 1T respectively.
@@ -447,9 +441,6 @@ predict.mixed.mnl(lm2.mixed2, data=profiles.new)
 
 ## Conclusion
 
-The attributes that presented properties of heterogeneity were weight (1.5) and processor (i5). The model chosen as the best representing our data was "Random effects + all correlated attributes" (lm2.mixed2).Also, the attribute that represents the biggest change in preference in relation to our selected profile was "*memory 1T*" (~12%). 
+The attributes that presented properties of heterogeneity were weight (1.5) and processor (i5). The model chosen as the best representing our data was "Random effects + all correlated attributes" (lm2.mixed2).Also, the attribute that represents the biggest change in preference in relation to our selected profile was "*memory 1T*". 
 
 One of the strategies that we could persue, if our production allows, is to increase the price from 1K to 1.5K and increase the memory from 256GB to 1T. If we use this strategy we could have a significant increase of preference share which nulifies the effect of the price increment on it. In this case, the preference share will change from ~*1.5%* to *16%*.
-
-
-

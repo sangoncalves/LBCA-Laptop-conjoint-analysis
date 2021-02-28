@@ -377,16 +377,13 @@ summary {
 <h1>Agenda</h1>
 <ul>
 <li>Project Description <br /></li>
-<li>Summary of all the analysis to be presented <br /></li>
 <li>Dataset description <br /></li>
 <li>Dataset balanced and Association of attributes<br /></li>
 <li>Models to fit our data<br /></li>
-<li>Choosing models part 1<br /></li>
+<li>Preference share prediction (MNL)<br /></li>
 <li>Are our users homogeneous?<br /></li>
-<li>Correlated models<br /></li>
-<li>Choosing models part 2<br /></li>
-<li>Preference share of the users<br /></li>
-<li>Product profiles<br /></li>
+<li>Preference share prediction (Mixed MNL)<br /></li>
+<li>Proposed Product profile<br /></li>
 <li>Conclusion<br /></li>
 </ul>
 <div id="project-description" class="section level2">
@@ -479,7 +476,7 @@ summary(lm1)</code></pre>
 ## 0.24573 0.25267 0.25227 0.24933 
 ## 
 ## nr method
-## 6 iterations, 0h:0m:2s 
+## 6 iterations, 0h:0m:3s 
 ## g&#39;(-H)^-1g = 2.15E-06 
 ## successive function values within tolerance limits 
 ## 
@@ -618,16 +615,16 @@ summary(lm2)</code></pre>
 <div id="preference-share-with-bootstrap---fixed-model" class="section level3">
 <h3>Preference share with bootstrap - Fixed model</h3>
 <pre><code>##          share        2.5%       97.5% Price  RAM Memory Processor Weight
-## 1  0.019110330 0.015801064 0.022819051     1  8GB  256GB        i5    1kg
-## 2  0.004386443 0.003624870 0.005122934   0.7  4GB  126GB        i3  0.8kg
-## 3  0.022159508 0.018992501 0.025830147     1  4GB  126GB        i3  1.2kg
-## 4  0.195533286 0.179117084 0.213353233   0.7  8GB  126GB        i3  1.2kg
-## 5  0.589102805 0.559686089 0.616875377   0.7  8GB     1T        i3  1.2kg
-## 6  0.002365335 0.001854727 0.003038243   1.5 16GB  512GB        i7  1.5kg
-## 7  0.093923556 0.083120184 0.107552534   0.7  4GB  126GB        i5  1.2kg
-## 8  0.004933601 0.004042816 0.005931809     2 16GB  512GB        i7  1.2kg
-## 9  0.003986239 0.003196249 0.004833010     2 32GB     1T        i9  1.5kg
-## 10 0.064498897 0.055425197 0.074269823   0.7  4GB     1T        i9    1kg
+## 1  0.019110330 0.015792642 0.023240143     1  8GB  256GB        i5    1kg
+## 2  0.004386443 0.003660115 0.005164878   0.7  4GB  126GB        i3  0.8kg
+## 3  0.022159508 0.018874925 0.025790658     1  4GB  126GB        i3  1.2kg
+## 4  0.195533286 0.178462512 0.210526547   0.7  8GB  126GB        i3  1.2kg
+## 5  0.589102805 0.559080452 0.616095749   0.7  8GB     1T        i3  1.2kg
+## 6  0.002365335 0.001850643 0.002885956   1.5 16GB  512GB        i7  1.5kg
+## 7  0.093923556 0.082272034 0.107561004   0.7  4GB  126GB        i5  1.2kg
+## 8  0.004933601 0.003977296 0.005867860     2 16GB  512GB        i7  1.2kg
+## 9  0.003986239 0.003170957 0.004983432     2 32GB     1T        i9  1.5kg
+## 10 0.064498897 0.055951840 0.075540488   0.7  4GB     1T        i9    1kg
 ##    ScreenSize
 ## 1          13
 ## 2          12
@@ -695,7 +692,7 @@ summary(lm2.mixed)</code></pre>
 ## 0.24573 0.25267 0.25227 0.24933 
 ## 
 ## bfgs method
-## 31 iterations, 0h:1m:6s 
+## 31 iterations, 0h:1m:16s 
 ## g&#39;(-H)^-1g = 1.14E-07 
 ## gradient close to zero 
 ## 
@@ -1102,66 +1099,28 @@ plot(Weight1.5kg.distr)</code></pre>
 ## 8       0.001899564     2 16GB  512GB        i7  1.2kg         16
 ## 9       0.002202304     2 32GB     1T        i9  1.5kg         14
 ## 10      0.070547102   0.7  4GB     1T        i9    1kg         16</code></pre>
-<p>As can be noticed, there was hardly any changes. The attribute with major changes kept being the memory (1T)</p>
-<div id="trade-off-attributes-graph---mixed-mnl" class="section level3">
-<h3>Trade-off attributes graph - Mixed MNL</h3>
-<pre><code>##             level       share      increase
-## Price1        0.7 0.026630590  0.0113983434
-## Price2          1 0.015000503 -0.0002317443
-## Price3        1.5 0.016487957  0.0012557099
-## Price4          2 0.008203257 -0.0070289895
-## RAM1          4GB 0.004941265 -0.0102909818
-## RAM2          8GB 0.015524681  0.0002924342
-## RAM3         16GB 0.002594070 -0.0126381770
-## RAM4         32GB 0.002144879 -0.0130873676
-## Memory1     126GB 0.060219008  0.0449867606
-## Memory2     256GB 0.015960209  0.0007279626
-## Memory3     512GB 0.023971030  0.0087387833
-## Memory4        1T 0.155745796  0.1405135493
-## Processor1     i3 0.012169072 -0.0030631754
-## Processor2     i5 0.015117875 -0.0001143719
-## Processor3     i7 0.009906661 -0.0053255859
-## Processor4     i9 0.003020141 -0.0122121064
-## Weight1     0.8kg 0.005239529 -0.0099927176
-## Weight2       1kg 0.016713874  0.0014816275
-## Weight3     1.2kg 0.013656563 -0.0015756835
-## Weight4     1.5kg 0.004428165 -0.0108040823
-## ScreenSize1    12 0.004177078 -0.0110551685
-## ScreenSize2    13 0.015927147  0.0006949003
-## ScreenSize3    14 0.042589818  0.0273575712
-## ScreenSize4    16 0.045552801  0.0303205538</code></pre>
-<p><img src="data:image/png;base64,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" width="672" /></p>
-<p>The graph above is the sensitivity chart with price - 1k, RAM - 8GB, memory - 256GB, processor - i5, weight - 1kg, screensize - 13&quot; as reference profile configuration. We can see that, increasing the memory from 256GB to 1TB would also increase the preference shares by 14% and increasing the screensize to 16&quot; can also increase the preference share by 3%. Any change in RAM size, processor or weight will have a negative effect on the preference shares.</p>
-</div>
-<div id="effects-of-individual-part-and-individual-level-predictors" class="section level3">
-<h3>Effects of individual part and individual-level predictors</h3>
-<p>In our case we do not have any variable that could be analyzed in the individual-level but we can analyze the individual part. That is, how the respondents chosen.</p>
-<pre><code>##   id     Price1    Price1.5    Price2   RAM8GB    RAM16GB    RAM32GB
-## 1  1 -0.3657811 -1.62490558 -1.093475 1.283102 -1.7421294 -0.7852214
-## 2  2 -0.4553263 -0.59621066 -1.208543 1.075840 -1.7228910 -0.8415202
-## 3  3 -0.5129085 -1.41943536 -1.148969 1.265987 -0.5380518 -0.9228320
-## 4  4 -0.6431417 -0.06253858 -1.321621 1.269412 -0.6279619 -0.7506234
-## 5  5 -0.5470193 -1.20563368 -1.156673 1.067121 -0.7794782 -1.3003684
-## 6  6 -0.4970269 -1.35792590 -1.128102 1.220884 -0.7687191 -0.9790940
-##   Memory256GB Memory512GB  Memory1T  Processori5 Processori7 Processori9
-## 1   -1.256039  -1.4437595 1.5681809  0.076889885 -0.23750942 -1.92644599
-## 2   -1.263700  -1.5073192 1.8610538 -0.257249235  0.67607089 -2.14114501
-## 3   -1.286650  -1.6528899 0.7490987  0.759678973 -0.80071147 -1.67899677
-## 4   -1.813827  -0.8278868 1.4359036 -0.148917259 -0.27446254 -1.93683590
-## 5   -1.820903  -2.4130723 1.3700970 -0.009764605  0.45533497 -0.08076373
-## 6   -1.243193  -1.1364115 1.6282862 -0.833002322  0.07197805 -0.76076381
-##   Weight1kg Weight1.2kg Weight1.5kg ScreenSize13 ScreenSize14 ScreenSize16
-## 1 0.9952269   1.0529275  -0.2935758    0.9550405     2.113482     2.005080
-## 2 1.0191498   2.0725047   0.2695898    0.3491183     2.564121     1.585352
-## 3 0.6372465   1.4343803  -0.7043718    1.1182186     2.076095     2.124813
-## 4 2.2624221   1.0028505  -0.1544891    2.1765558     1.456686     4.078110
-## 5 1.3013272   2.2484357  -0.6655220    1.7817762     3.160109     2.712075
-## 6 0.7560246  -0.8907705   0.4188773    1.4470695     1.190435     1.773454</code></pre>
-</div>
+<h2>Proposed Product profile</h2>
+<p>Here we are estimating the preference share of product profile with some proposed changes that can increase its acceptance rate. So our new reference profile will have an updation in the price and memory attributes, from 1K to 1.5K and 256GB to 1T respectively.</p>
+<pre class="r"><code>proposed.profile &lt;- ProductSelection(Price = 1.5, RAM = 8,Memory = 1,Processor = 5, Weight = 1, ScreenSize = 13)
+profiles.new &lt;- rbind(proposed.profile,entry1, entry2,entry3, entry4, mid2, mid3, high1, high2, high3)
+set.seed(1234)
+predict.mixed.mnl(lm2.mixed2, data=profiles.new)</code></pre>
+<pre><code>##    colMeans(shares) Price  RAM Memory Processor Weight ScreenSize
+## 1       0.163394122   1.5  8GB     1T        i5    1kg         13
+## 2       0.001516895   0.7  4GB  126GB        i3  0.8kg         12
+## 3       0.008854438     1  4GB  126GB        i3  1.2kg         13
+## 4       0.163650758   0.7  8GB  126GB        i3  1.2kg         14
+## 5       0.530649505   0.7  8GB     1T        i3  1.2kg         16
+## 6       0.001164504   1.5 16GB  512GB        i7  1.5kg         16
+## 7       0.071025080   0.7  4GB  126GB        i5  1.2kg         14
+## 8       0.001641228     2 16GB  512GB        i7  1.2kg         16
+## 9       0.001939126     2 32GB     1T        i9  1.5kg         14
+## 10      0.056164342   0.7  4GB     1T        i9    1kg         16</code></pre>
 </div>
 <div id="conclusion" class="section level2">
 <h2>Conclusion</h2>
-<p>In summary, the finding of our analysis is that the attribute that represents the biggest change in preference was memory (1T) and the costumers are homogeneous regarding this preference. The attributes that presented features of heterogeneity are weight (1.5) and processor (i5). The model chosen as the best representing our data was “Random effects + all correlated” (lm2.mixed2). Finally, is necessary to analyse if would be possible to increase the memory of our desired product without compromising much the price in order to increase the preference share.</p>
+<p>The attributes that presented properties of heterogeneity were weight (1.5) and processor (i5). The model chosen as the best representing our data was “Random effects + all correlated attributes” (lm2.mixed2).Also, the attribute that represents the biggest change in preference in relation to our selected profile was “<em>memory 1T</em>”.</p>
+<p>One of the strategies that we could persue, if our production allows, is to increase the price from 1K to 1.5K and increase the memory from 256GB to 1T. If we use this strategy we could have a significant increase of preference share which nulifies the effect of the price increment on it. In this case, the preference share will change from ~<em>1.5%</em> to <em>16%</em>.</p>
 </div>
 </div>
 
