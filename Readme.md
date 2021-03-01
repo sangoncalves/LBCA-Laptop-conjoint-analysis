@@ -1,4 +1,4 @@
-#Project: Conjoint Analysis
+# Project: Conjoint Analysis
 
 This project was done on the course "Laboratory of Customer and Business Analytics" from University of Trento. The idea is that a generated dataset will be given and is necessary to draw conclusions that enhances business decision making.
 
@@ -19,7 +19,7 @@ Generate by the professor of the course. Consists in choice-based survey, where 
 
 Add here the profiles that we are going to take in consideration, which one is the chosen and which are the competitors
 
-| | Price | RAM | Memory | Processor | Weight | ScreenSize |
+| Profiles| Price | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
  | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 |
 | 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
