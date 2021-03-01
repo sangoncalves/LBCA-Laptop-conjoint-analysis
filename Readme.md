@@ -19,7 +19,7 @@ Generate by the professor of the course. Consists in choice-based survey, where 
 
 Add here the profiles that we are going to take in consideration, which one is the chosen and which are the competitors
 
-| Profiles| Price | RAM | Memory | Processor | Weight | ScreenSize |
+| Profiles| Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
  | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 |
 | 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
