@@ -38,7 +38,7 @@ Add here the set of models analysed. Add the chosen model.
 
 # Preference share - should go before models?
 
-# Trade-off
+# Trade-off Features
 
 # Suggested Profile
 
