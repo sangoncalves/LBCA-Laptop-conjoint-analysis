@@ -6,7 +6,7 @@ This is a summary of the report. The html of the full report can be found on thi
 
 # Objective
 
-Analyse the given dataset, generate insigths for decision making having in mind a profile (set of specification) of a laptop.
+Analyse the given dataset and generate insigths for decision making having in mind a profile's laptop (defined set of features).
 
 # Data
 
