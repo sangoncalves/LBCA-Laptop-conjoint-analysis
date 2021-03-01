@@ -21,9 +21,9 @@ Add here the profiles that we are going to take in consideration, which one is t
 
 | | Price | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
- | 1 | 1 | 8GB | 256GB | i5| 1kg | 13 |
-| 2 | 0.7  | | 4GB | 126GB  | i3 | 0.8kg | 12 |
- | 3 |  1 | 4GB  126GB   | i3  1.2kg |13 |
+ | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 |
+| 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
+ | 3 |  1 | 4GB | 126GB | i3 | 1.2kg | 13 |
  | 4 | 0.7 | 8GB | 126GB | i3 | 1.2kg | 14 |
 | 5 | 0.7 | 8GB | 1T | i3 | 1.2kg | 16 |
  | 6 | 1.5 | 16GB |512GB|i7 | 1.5kg | 16 |
