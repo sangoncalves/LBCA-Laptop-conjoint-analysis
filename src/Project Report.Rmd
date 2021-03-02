@@ -2,8 +2,8 @@
 title: "Laboratory of Consumer and Business Analytics"
 subtitle: "Conjoint analysis - Laptop Dataset"
 author: 
-  - "Nisha Antony"
   - "Sander Martins"
+  - "Nisha Antony"
 date: "27/01/2021"
 output: html_document
 ---
