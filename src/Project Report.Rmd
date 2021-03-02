@@ -23,7 +23,7 @@ library(parallel)
 ```
 
 ```{r Loading Dataset, include=FALSE}
-laptops = read.csv("Dataset/laptops.csv", sep=";")
+laptops = read.csv("../Dataset/laptops.csv", sep=";")
 
 ```
 
