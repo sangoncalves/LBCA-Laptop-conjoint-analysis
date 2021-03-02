@@ -22,7 +22,7 @@ The other profiles are competitors
 
 | Profile | Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
-** | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 | **
+| **1** | **1** | **8GB** | **256GB** | **i5** | **1kg** | **13** |
 | 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
  | 3 |  1 | 4GB | 126GB | i3 | 1.2kg | 13 |
  | 4 | 0.7 | 8GB | 126GB | i3 | 1.2kg | 14 |
@@ -41,7 +41,7 @@ Add here the set of models analysed. Add the chosen model.
 
 | Profile | share |
 | ------ |----------- |
-** | 1 | 0.019110330 |**
+| **1** | **0.019110330** |
 | 2 | 0.004386443 |
 | 3 | 0.022159508 |
 | 4 | 0.195533286 |
@@ -86,7 +86,7 @@ Add here the set of models analysed. Add the chosen model.
 
 |   |colMeans(shares) |Price  |RAM |Memory |Processor |Weight |ScreenSize|
 |---| ----------- | ----------- | --- | ---- | -------- | ----------- |---|
-|1  |     0.163394122 |  1.5  |8GB |    1T |       i5 |   1kg |        13|
+|**1**  |     **0.163394122** |  **1.5**  |**8GB** |    **1T** |       **i5** |   **1kg** |        **13**|
 |2  |     0.001516895 |  0.7  |4GB | 126GB |       i3 | 0.8kg |        12|
 |3  |     0.008854438 |    1  |4GB | 126GB |       i3 | 1.2kg |        13|
 |4  |     0.163650758 |  0.7  |8GB | 126GB |       i3 | 1.2kg |        14|
