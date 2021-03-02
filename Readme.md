@@ -84,7 +84,18 @@ Add here the set of models analysed. Add the chosen model.
 
 # Proposed Profile Changes
 
-
+|   |colMeans(shares) |Price  |RAM |Memory |Processor |Weight |ScreenSize|
+|---| ----------- | ----------- | --- | ---- | -------- | ----------- |---|
+|1  |     0.163394122 |  1.5  |8GB |    1T |       i5 |   1kg |        13|
+|2  |     0.001516895 |  0.7  |4GB | 126GB |       i3 | 0.8kg |        12|
+|3  |     0.008854438 |    1  |4GB | 126GB |       i3 | 1.2kg |        13|
+|4  |     0.163650758 |  0.7  |8GB | 126GB |       i3 | 1.2kg |        14|
+|5  |     0.530649505 |  0.7  |8GB |    1T |       i3 | 1.2kg |        16|
+|6  |     0.001164504 |  1.5 1|6GB | 512GB |       i7 | 1.5kg |        16|
+|7  |     0.071025080 |  0.7  |4GB | 126GB |       i5 | 1.2kg |        14|
+|8  |     0.001641228 |    2 1|6GB | 512GB |       i7 | 1.2kg |        16|
+|9  |     0.001939126 |    2 3|2GB |    1T |       i9 | 1.5kg |        14|
+|10 |     0.056164342 |  0.7  |4GB |    1T |       i9 |   1kg |        16|
 # Conclusion
 
 One of the strategies that we could persue, if our production cost allows, is to increase the price from 1K to 1.5K and increase the memory from 256GB to 1T. If we use this strategy we could have a significant increase of preference share which nulifies the effect of the price increment on it. In this case, the preference share will change from ~1.5% to 16%.
