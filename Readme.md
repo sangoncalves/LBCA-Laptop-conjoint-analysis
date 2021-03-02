@@ -35,7 +35,12 @@ The other profiles are competitors
 
 # Models Analysed
 
-Add here the set of models analysed. Add the chosen model.
+* Fixed effects (with and without intercept)
+* Random effects but Uncorrelated features
+* Random effects + all features correlated
+* Random effects + Partially correlated features
+
+After comparing the models above using likelihood test, the chosen model is **Random effects + all features correlated**.
 
 # Preference Share 
 
