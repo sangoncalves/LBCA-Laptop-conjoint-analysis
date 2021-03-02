@@ -17,7 +17,7 @@ Generate by the professor of the course. Consists in choice-based survey, where 
 
 # Profile Scenario
 
-Profile 1: Selected profile
+Profile 1: Selected profile. <br>
 The other profiles are competitors
 
 | Profile | Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
