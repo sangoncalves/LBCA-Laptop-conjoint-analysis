@@ -19,7 +19,7 @@ Generate by the professor of the course. Consists in choice-based survey, where 
 
 Add here the profiles that we are going to take in consideration, which one is the chosen and which are the competitors
 
-| Profiles| Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
+| Profile | Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
  | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 |
 | 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
@@ -36,9 +36,24 @@ Add here the profiles that we are going to take in consideration, which one is t
 
 Add here the set of models analysed. Add the chosen model.
 
-# Preference share - should go before models?
+# Preference Share 
+
+| Profile | share |
+| ------ |----------- |
+ | 1 | 0.019110330 |
+| 2 | 0.004386443 |
+| 3 | 0.022159508 |
+| 4 | 0.195533286 |
+| 5 | 0.589102805 |
+| 6 | 0.002365335 |
+| 7 | 0.093923556 |
+| 8 | 0.004933601 |
+| 9 | 0.003986239 | 
+| 10 | 0.064498897 |
 
 # Trade-off Features
+
+
 
 # Suggested Profile
 
