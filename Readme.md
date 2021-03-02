@@ -17,11 +17,12 @@ Generate by the professor of the course. Consists in choice-based survey, where 
 
 # Profile Scenario
 
-Add here the profiles that we are going to take in consideration, which one is the chosen and which are the competitors
+Profile 1: Selected profile
+The other profiles are competitors
 
 | Profile | Price (x1000€) | RAM | Memory | Processor | Weight | ScreenSize |
 |--|-----|-----|--------|-----------| ------ |----------- |
- | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 |
+** | 1 | 1 | 8GB | 256GB | i5 | 1kg | 13 | **
 | 2 | 0.7  | 4GB | 126GB | i3 | 0.8kg | 12 |
  | 3 |  1 | 4GB | 126GB | i3 | 1.2kg | 13 |
  | 4 | 0.7 | 8GB | 126GB | i3 | 1.2kg | 14 |
@@ -40,7 +41,7 @@ Add here the set of models analysed. Add the chosen model.
 
 | Profile | share |
 | ------ |----------- |
- | 1 | 0.019110330 |
+** | 1 | 0.019110330 |**
 | 2 | 0.004386443 |
 | 3 | 0.022159508 |
 | 4 | 0.195533286 |
@@ -81,6 +82,9 @@ Add here the set of models analysed. Add the chosen model.
 | ScreenSize4 |   16 | 0.044984600 | 0.025874270 |
 
 
-# Suggested Profile
+# Proposed Profile Changes
+
 
 # Conclusion
+
+One of the strategies that we could persue, if our production cost allows, is to increase the price from 1K to 1.5K and increase the memory from 256GB to 1T. If we use this strategy we could have a significant increase of preference share which nulifies the effect of the price increment on it. In this case, the preference share will change from ~1.5% to 16%.
